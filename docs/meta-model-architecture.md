@@ -194,7 +194,8 @@ Optional budget controls:
 
 - Wonder escalation and Spark Open fallback: implemented in the routed service.
 - Muse Voice Transcribe server endpoint: implemented (`/api/transcribe`).
-- Remaining: caching, metrics collection, and budget guards.
+- Response cache: implemented in memory for identical `/api/generate` requests (`response_cache.py`). Dropped on process restart.
+- Remaining: metrics collection and budget guards.
 
 ### Phase 4
 

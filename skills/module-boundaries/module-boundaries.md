@@ -14,8 +14,9 @@ The page calls `/api/generate` and `/api/speak`. Keep the package matched to tha
 
 | Module | Owns |
 | --- | --- |
-| `app.py` | Routes and `create_app()`. Inject model, speaker, text service, and transcriber for tests. |
+| `app.py` | Routes and `create_app()`. Inject model, speaker, text service, transcriber, and response cache for tests. |
 | `schemas.py` | Pydantic bodies. |
+| `response_cache.py` | Hash cache for identical generate requests. Memory only. |
 | `ai_router.py` | `plan_model_route()`, `model_base_url()`, `tls_verify()`. Planning only. |
 | `ai_models.py` | The chat client and `RoutedTextService`. |
 | `providers.py` | Study-only client. Same HTTP job as `MetaTextClient`. Do not add a third copy. |

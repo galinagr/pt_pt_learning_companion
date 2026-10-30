@@ -80,6 +80,7 @@ class GenerateResponse(BaseModel):
     text: str
     route: RouteInfo
     usage: TokenUsage
+    cached: bool = False
 
 
 class TranscribeResponse(BaseModel):

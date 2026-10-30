@@ -14,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from pt_pt_learning_companion.ai_models import RoutedTextService, build_text_service
 from pt_pt_learning_companion.ai_router import build_router_config, plan_model_route
 from pt_pt_learning_companion.providers import StudyModel, build_model
+from pt_pt_learning_companion.response_cache import ResponseCache
 from pt_pt_learning_companion.schemas import (
     GenerateRequest,
     GenerateResponse,
@@ -62,6 +63,7 @@ def create_app(
     speaker: Speaker | None = None,
     text_service: RoutedTextService | None = None,
     transcriber: Transcriber | None = None,
+    response_cache: ResponseCache | None = None,
 ) -> FastAPI:
     # Load a local .env (git-ignored) so MODEL_API_KEY etc. reach the process.
     # Existing environment variables win; nothing is overwritten.
@@ -71,6 +73,7 @@ def create_app(
     speak = speaker if speaker is not None else synthesize
     routed = text_service if text_service is not None else build_text_service()
     speech_to_text = transcriber if transcriber is not None else build_transcriber()
+    cache = response_cache if response_cache is not None else ResponseCache()
     app = FastAPI(title="PT-PT Learning Companion", version="0.1.0")
     app.add_middleware(
         CORSMiddleware,
@@ -117,10 +120,15 @@ def create_app(
 
     @app.post("/api/generate", response_model=GenerateResponse)
     def generate(body: GenerateRequest) -> GenerateResponse:
+        system = GENERATE_INSTRUCTIONS[body.task]
+        key = cache.key(body, system)
+        cached = cache.get(key)
+        if cached is not None:
+            return cached
         try:
             result = routed.run(
                 task=body.task,
-                system=GENERATE_INSTRUCTIONS[body.task],
+                system=system,
                 user=body.text.strip(),
                 quality=body.quality,
                 budget_mode=body.budget_mode,
@@ -130,7 +138,7 @@ def create_app(
             )
         except httpx.HTTPError as exc:
             raise HTTPException(status_code=502, detail="The model provider request failed.") from exc
-        return GenerateResponse(
+        response = GenerateResponse(
             text=result.text,
             route=RouteInfo(
                 classifier_model=result.plan.classifier_model,
@@ -148,6 +156,9 @@ def create_app(
                 total_tokens=result.total_tokens,
             ),
         )
+        if result.plan.cache_recommended:
+            cache.put(key, response)
+        return response
 
     @app.post("/api/transcribe", response_model=TranscribeResponse)
     async def transcribe(

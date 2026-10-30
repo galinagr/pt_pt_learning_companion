@@ -78,6 +78,29 @@ def test_generate_strict_budget_starts_on_open_weights():
     assert response.json()["route"]["model_used"] == "muse-spark-open"
 
 
+def test_generate_repeat_is_served_from_cache():
+    class CountingClient:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def generate(self, model, system, user, *, temperature=0.2, json_mode=False):
+            self.calls += 1
+            return StubTextClient().generate(model, system, user, temperature=temperature, json_mode=json_mode)
+
+    counter = CountingClient()
+    client = TestClient(_app(text_service=RoutedTextService(counter, confidence_threshold=0.6)))
+    body = {"task": "translate", "text": "Bom dia."}
+    first = client.post("/api/generate", json=body)
+    second = client.post("/api/generate", json=body)
+    other = client.post("/api/generate", json={"task": "translate", "text": "Boa noite."})
+    assert first.status_code == second.status_code == other.status_code == 200
+    assert first.json()["cached"] is False
+    assert second.json()["cached"] is True
+    assert second.json()["text"] == first.json()["text"]
+    assert other.json()["cached"] is False
+    assert counter.calls == 2
+
+
 def test_transcribe_returns_text_from_managed_provider():
     class FakeTranscriber:
         async def transcribe(self, audio, content_type, language):

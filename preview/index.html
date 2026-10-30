@@ -84,9 +84,14 @@
     }
 
     body.demo-contained .page {
-      max-width: 840px;
-      margin: 0 auto 0 clamp(16px, 6vw, 88px);
+      max-width: 1120px;
+      margin: 0 auto 0 clamp(16px, 4vw, 48px);
       padding: 64px 22px 80px;
+    }
+
+    body.demo-contained #home,
+    body.demo-contained #work {
+      max-width: none;
     }
 
     #home, #work {
@@ -863,12 +868,18 @@
       display: flex;
       gap: 8px;
       align-items: center;
+      min-width: 0;
       padding: 0 16px 8px;
     }
 
-    .ask input[type="text"] { flex: 1; width: auto; }
+    .ask input[type="text"] {
+      flex: 1 1 auto;
+      width: auto;
+      min-width: 0;
+    }
 
     .ask button {
+      flex: 0 0 auto;
       border: 1px solid var(--pt);
       background: var(--card);
       color: var(--pt-ink);
@@ -1754,39 +1765,78 @@
       return "/api/speak";
     }
 
+    function speechSentences(text) {
+      const chunks = text.split(/\n+/).flatMap((line) => line.split(/(?<=[.!?…])\s+/));
+      const sentences = chunks.map((part) => part.trim()).filter(Boolean);
+      return sentences.length ? sentences : [text.trim()];
+    }
+
+    function fetchSpeech(phrase, mark) {
+      return fetch(speakEndpoint(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: phrase, rate: state.rate === 0.5 ? 0.5 : 1 })
+      }).then(async (response) => {
+        if (mark !== speechMark) return null;
+        if (!response.ok) throw new Error("speech failed");
+        const blob = await response.blob();
+        if (mark !== speechMark) return null;
+        return blob;
+      });
+    }
+
+    function playSpeechBlob(blob, mark) {
+      return new Promise((resolve, reject) => {
+        if (mark !== speechMark) {
+          resolve(false);
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        currentAudio = audio;
+        let settled = false;
+        const finish = (ok) => {
+          if (settled) return;
+          settled = true;
+          URL.revokeObjectURL(url);
+          if (currentAudio === audio) currentAudio = null;
+          if (ok) resolve(mark === speechMark);
+          else reject(new Error("speech failed"));
+        };
+        audio.addEventListener("ended", () => finish(true), { once: true });
+        audio.addEventListener("pause", () => {
+          if (mark !== speechMark) finish(false);
+        });
+        audio.play().then(() => {
+          if (mark === speechMark) $("status").textContent = "European Portuguese";
+        }).catch(() => finish(false));
+      });
+    }
+
     async function speakPortuguese(text, button) {
       const phrase = text.trim();
       if (!phrase || speechBusy()) return;
       const mark = ++speechMark;
+      const sentences = speechSentences(phrase);
       speechMode = "play";
       showLiveButton(button);
       showStop(true);
       $("status").textContent = "European Portuguese…";
       try {
-        const response = await fetch(speakEndpoint(), {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: phrase, rate: state.rate === 0.5 ? 0.5 : 1 })
-        });
+        let upcoming = fetchSpeech(sentences[0], mark);
+        for (let i = 0; i < sentences.length; i += 1) {
+          const blob = await upcoming;
+          if (mark !== speechMark || !blob) return;
+          if (i + 1 < sentences.length) upcoming = fetchSpeech(sentences[i + 1], mark);
+          const played = await playSpeechBlob(blob, mark);
+          if (!played || mark !== speechMark) return;
+        }
         if (mark !== speechMark) return;
-        if (!response.ok) throw new Error("speech failed");
-        const blob = await response.blob();
-        if (mark !== speechMark) return;
-        const url = URL.createObjectURL(blob);
-        const audio = new Audio(url);
-        currentAudio = audio;
-        audio.addEventListener("ended", () => {
-          URL.revokeObjectURL(url);
-          if (currentAudio === audio) currentAudio = null;
-          if (mark !== speechMark) return;
-          speechMode = "";
-          showStop(false);
-          releaseLiveButton(button);
-          markSpeaking(null);
-          $("status").textContent = "";
-        }, { once: true });
-        await audio.play();
-        if (mark === speechMark) $("status").textContent = "European Portuguese";
+        speechMode = "";
+        showStop(false);
+        releaseLiveButton(button);
+        markSpeaking(null);
+        $("status").textContent = "";
       } catch (err) {
         if (mark !== speechMark) return;
         speechMode = "";
@@ -2632,10 +2682,8 @@
 
       revealWorkTop();
       if (!(await waitForReveal(token))) return;
-      setDemoSubtitle("Switching clears the text.", "dir-pt-en");
-      if (!(await waitDemo(700, token))) return;
       $("dir-pt-en").click();
-      if (!(await waitDemo(700, token))) return;
+      if (!(await waitDemo(400, token))) return;
       setDemoSubtitle("Type or dictate Portuguese text.", "source");
       if (!(await typeDemo("source", "O comboio parte às nove.", token))) return;
       if (!(await waitDemo(650, token))) return;
@@ -2647,16 +2695,14 @@
 
       revealWorkTop();
       if (!(await waitForReveal(token))) return;
-      setDemoSubtitle("Switching back clears it too.", "dir-en-pt");
-      if (!(await waitDemo(650, token))) return;
       $("dir-en-pt").click();
-      if (!(await waitDemo(500, token))) return;
+      if (!(await waitDemo(400, token))) return;
       revealWorkTop();
       if (!(await waitForReveal(token))) return;
       setDemoSubtitle("Jump to Explore.", "go-explore");
-      if (!(await waitDemo(800, token))) return;
+      if (!(await waitDemo(450, token))) return;
       openAction("explore", true);
-      if (!(await waitDemo(850, token))) return;
+      if (!(await waitDemo(400, token))) return;
       setDemoSubtitle("Name a place, e.g. a restaurant.", "subject");
       if (!(await typeDemo("subject", "a restaurant in Porto", token))) return;
       if (!(await waitDemo(650, token))) return;
@@ -2693,13 +2739,9 @@
       revealWorkTop();
       if (!(await waitForReveal(token))) return;
       setDemoSubtitle("Jump to Talk.", "go-situation");
-      if (!(await waitDemo(800, token))) return;
+      if (!(await waitDemo(450, token))) return;
       openAction("situation", true);
-      if (!(await waitDemo(850, token))) return;
-      setDemoSubtitle("← Main stays on the left.", "back-home");
-      if (!(await waitDemo(800, token))) return;
-      setDemoSubtitle("The other two stay on the right.", "go-translate");
-      if (!(await waitDemo(800, token))) return;
+      if (!(await waitDemo(400, token))) return;
       setDemoSubtitle("Type or dictate keywords.", "keywords");
       if (!(await typeDemo("keywords", "doctor, appointment, payment", token))) return;
       if (!(await waitDemo(650, token))) return;
@@ -2730,10 +2772,19 @@
 
       revealWorkTop();
       if (!(await waitForReveal(token))) return;
-      setDemoSubtitle("Main returns you home.", "back-home");
-      if (!(await waitDemo(700, token))) return;
-      goHomeFromWork();
-      if (!(await waitDemo(800, token))) return;
+      setDemoSubtitle("Back to Translate, without Main.", "go-translate");
+      if (!(await waitDemo(450, token))) return;
+      openAction("translate", true);
+      if (!(await waitDemo(500, token))) return;
+      setDemoSubtitle("The result is still here.", "view-table");
+      if (!(await waitDemo(900, token))) return;
+
+      revealWorkTop();
+      if (!(await waitForReveal(token))) return;
+      setDemoSubtitle("Back to Main.", "back-home");
+      if (!(await waitDemo(450, token))) return;
+      $("back-home").click();
+      if (!(await waitDemo(500, token))) return;
 
       setDemoSubtitle("Now pick what you need.", "");
       $("demo-subtitle").classList.add("finish");
