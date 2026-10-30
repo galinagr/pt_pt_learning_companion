@@ -21,13 +21,13 @@ Local FastAPI app and one HTML page for European Portuguese: Translate, Explore,
 | httpx | `MetaTextClient` posts to the Meta Model API. |
 | python-dotenv | `create_app()` reads a git-ignored `.env`. |
 | edge-tts | Portuguese playback, voice `pt-PT-RaquelNeural`. No speech key. |
-| Web Speech API | Dictate in the browser. |
+| Web Speech API | Dictate in the browser. Say uses Muse Voice Transcribe. |
 | Meta Model API | Live text when `MODEL_API_KEY` is set. Default model `muse-spark-1.3`. |
 | pytest | `tests/`. |
 
 ## 🏗️ Architecture
 
-Two decisions are written down as ADRs. Option B is the chosen design in both. The diagrams below are those decisions. The code today runs a thinner path: the page sends `quality=standard`, so text uses Muse Spark only; Wonder does not escalate because the live client reports confidence `1.0`; Glimmer, Muse Image, and SAM are named and not called. Dictation in the browser uses the Web Speech API. Watch a Demo never calls the model.
+Two decisions are written down as ADRs. Option B is the chosen design in both. The diagrams below are those decisions. The code today runs a thinner path: the page sends `quality=standard`, so text uses Muse Spark only; Wonder does not escalate because the live client reports confidence `1.0`; Glimmer, Muse Image, and SAM are named and not called. Say sends the clip to Muse Voice Transcribe. Dictate stays on the Web Speech API. Watch a Demo never calls the model.
 
 | Document | What it decides |
 | --- | --- |
@@ -138,8 +138,9 @@ pytest
 
 | Module | What it does |
 | --- | --- |
-| `app.py` | Builds the FastAPI app, loads `.env`, and registers the routes below. `create_app()` accepts a model, speaker, text service, and transcriber so tests can inject fakes. |
+| `app.py` | Builds the FastAPI app, loads `.env`, and registers the routes below. `create_app()` accepts a model, speaker, text service, transcriber, and response cache so tests can inject fakes. |
 | `schemas.py` | Pydantic request and response models. |
+| `response_cache.py` | In-memory hash cache for identical `/api/generate` requests. Dropped when the process stops. |
 | `ai_router.py` | `plan_model_route()` picks Spark, Wonder, or Spark Open from `quality` and `budget_mode`. It does not call a model. `model_base_url()` and `tls_verify()` are the single API URL and CA lookup. |
 | `ai_models.py` | `RoutedTextService.run()` executes that plan. `MetaTextClient` posts to `/chat/completions`. `StubTextClient` is used when no key is set. |
 | `providers.py` | Separate study client for `POST /api/study`. Same stub-or-Meta rule, not the router. |
@@ -147,7 +148,7 @@ pytest
 
 `MODEL_API_KEY` set → Meta at `MODEL_BASE_URL` (default `https://api.meta.ai/v1`). Unset → offline stub. `MODEL_NAME` defaults to `muse-spark-1.3`.
 
-What the router actually calls today: the page sends `quality=standard`, so `/api/generate` uses Spark only. Wonder runs only for `quality=high` when the client reports confidence under 0.6. The live client always reports `1.0`, so Wonder does not run. Glimmer is named on the plan and is not requested. Spark Open runs when Spark raises. Dictation in the browser uses the Web Speech API, not `/api/transcribe`.
+What the router actually calls today: the page sends `quality=standard`, so `/api/generate` uses Spark only. Wonder runs only for `quality=high` when the client reports confidence under 0.6. The live client always reports `1.0`, so Wonder does not run. Glimmer is named on the plan and is not requested. Spark Open runs when Spark raises. Say posts the clip to `/api/transcribe` (Muse Voice Transcribe) and uses the browser only if that returns `503`. Dictate stays on the Web Speech API.
 
 A corporate TLS proxy re-signs `api.meta.ai`. `tls_verify()` keeps verification on and uses `MODEL_CA_BUNDLE` or `.certs/trust-bundle.pem` when that file exists.
 
@@ -158,7 +159,7 @@ A corporate TLS proxy re-signs `api.meta.ai`. `tls_verify()` keeps verification 
 | `GET` | `/` | Serves `preview/index.html`. |
 | `GET` | `/health` | `{"status":"ok"}`. |
 | `GET` | `/api/editorial-videos` | Up to three video files from `~/Downloads`. |
-| `POST` | `/api/generate` | Routed text. Body: `task` (`translate`, `explore`, `situation`), `text`, optional `quality` (`standard` or `high`), `budget_mode`. Returns text, route, and token counts. |
+| `POST` | `/api/generate` | Routed text. Body: `task` (`translate`, `explore`, `situation`), `text`, optional `quality` (`standard` or `high`), `budget_mode`. Returns text, route, and token counts. An identical request in the same process returns `cached: true` and does not call the model again. |
 | `POST` | `/api/model-plan` | The route only. No model call. |
 | `POST` | `/api/study` | Translation, vocabulary, and exercises for one passage. |
 | `POST` | `/api/speak` | MP3 for a Portuguese line. Body: `text`, `rate` from 0.5 to 1. |
@@ -173,7 +174,7 @@ curl -s localhost:8000/api/generate -H 'content-type: application/json' \
 
 `python scripts/smoke_option_b.py` runs the same routed path from the shell.
 
-Token counts come back on `GenerateResponse.usage` (`prompt_tokens`, `completion_tokens`, `total_tokens`). Nothing is written to disk.
+Token counts come back on `GenerateResponse.usage` (`prompt_tokens`, `completion_tokens`, `total_tokens`). The generate cache stays in memory. Nothing is written to disk.
 
 ## 🖥️ Page
 
@@ -190,6 +191,6 @@ Token counts come back on `GenerateResponse.usage` (`prompt_tokens`, `completion
 
 ## 🗺️ Before production
 
-Tests beyond the current pytest modules, structured logs, metrics, auth, a lockfile, and CI. Caching, budget enforcement, and a real confidence signal are in the architecture above and are not running yet.
+Tests beyond the current pytest modules, structured logs, metrics, auth, a lockfile, and CI. Budget enforcement and a real confidence signal are in the architecture above and are not running yet. Identical `/api/generate` requests are cached in memory for the life of the process.
 
 Meta API reference: <https://dev.meta.ai/docs/api-reference>. Model list: <https://dev.meta.ai/docs/models>.

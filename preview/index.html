@@ -321,10 +321,9 @@
       z-index: 69;
       margin-top: 0;
       display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: flex-end;
+      flex-direction: column;
+      gap: 8px;
+      align-items: flex-end;
     }
 
     .demo-link {
@@ -533,16 +532,34 @@
     }
 
 
-    .back {
-      margin: 0 0 18px;
-      padding: 0;
+    .work-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px 20px;
+      margin: 0 0 16px;
+    }
+
+    .work-next {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 4px 16px;
+    }
+
+    .nav-main,
+    .nav-next {
       border: 0;
       border-radius: 0;
       background: transparent;
       color: var(--pt-fill);
-      font: 600 34px/1.1 ui-sans-serif, system-ui, sans-serif;
-      letter-spacing: -0.03em;
+      font: 600 22px/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: -0.02em;
+      padding: 4px 0;
     }
+
+    .nav-main::before { content: "←\00a0"; }
+    .nav-next::before { content: "→\00a0"; }
 
     #work h1 { max-width: none; font-size: 40px; }
 
@@ -662,8 +679,12 @@
         animation: intro-in 1s cubic-bezier(.16, .84, .32, 1) 2.25s both;
       }
 
-      #home.home-enter .demo-actions {
-        animation: intro-in 1s cubic-bezier(.16, .84, .32, 1) 2.8s both;
+      #home.home-enter #watch-demo {
+        animation: intro-in 1.8s cubic-bezier(.16, .84, .32, 1) 2.8s both;
+      }
+
+      #home.home-enter #skip-intro {
+        animation: intro-in 1.8s cubic-bezier(.16, .84, .32, 1) 4.8s both;
       }
     }
 
@@ -734,6 +755,14 @@
     }
 
     .speed { display: flex; gap: 6px; }
+
+    #stop-speech {
+      border: 1px solid var(--line);
+      background: light-dark(#fff, #1b1916);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font: 14px/1 ui-sans-serif, system-ui, sans-serif;
+    }
 
     .speed button[aria-pressed="true"] {
       background: var(--pt-fill);
@@ -935,6 +964,76 @@
       flex: 0 0 auto;
     }
 
+    button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    button:active,
+    button.is-pressed,
+    button.is-live,
+    .choices button:active,
+    .choices button.is-pressed,
+    .choices button.is-live,
+    .topics button:active,
+    .topics button.is-pressed,
+    .topics button.is-live,
+    .speed button:active,
+    .speed button.is-pressed,
+    .speed button.is-live,
+    .action-tiles button:active,
+    .action-tiles button.is-pressed,
+    .action-tiles button.is-live,
+    .sound:active,
+    .sound.is-live,
+    .mic:active,
+    .mic.is-live,
+    .word:active,
+    .word.is-live,
+    .nav-main:active,
+    .nav-next:active,
+    .primary:active,
+    .primary.is-live,
+    .demo-link:active,
+    #stop-speech:active {
+      background: #0f6e56;
+      border-color: #0f6e56;
+      color: #f4fbf8;
+    }
+
+    button.is-locked,
+    .choices button.is-locked,
+    .topics button.is-locked,
+    .speed button.is-locked,
+    .action-tiles button.is-locked,
+    .sound.is-locked,
+    .mic.is-locked,
+    .nav-main.is-locked,
+    .nav-next.is-locked,
+    .primary.is-locked,
+    .demo-link.is-locked,
+    .ask button.is-locked,
+    #stop-speech.is-locked {
+      background: light-dark(#e4e0da, #2a2826);
+      border-color: light-dark(#c8c2ba, #4a463f);
+      color: light-dark(#8d877e, #7a746c);
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 1;
+    }
+
+    .word.is-locked {
+      background: transparent;
+      color: light-dark(#a39d94, #6e6860);
+      cursor: not-allowed;
+    }
+
+    .action-tiles button.is-locked .scene,
+    .action-tiles button.is-locked .tile-name,
+    .action-tiles button.is-locked .tile-note {
+      opacity: 0.4;
+    }
+
     .heard {
       display: block;
       width: 100%;
@@ -1093,6 +1192,8 @@
       .page { margin: 0 auto; padding-top: 48px; }
       .choices.action-tiles, .action-tiles { grid-template-columns: 1fr; }
       .action-tiles button { min-height: 0; }
+      .work-nav { align-items: flex-start; }
+      .nav-main, .nav-next { font-size: 18px; }
       th, td { padding: 10px 8px; }
       td { font-size: 16px; }
     }
@@ -1146,11 +1247,19 @@
       </div>
       <div class="demo-actions">
         <button type="button" id="watch-demo" class="demo-link">Watch a Demo.</button>
+        <button type="button" id="skip-intro" class="demo-link" hidden>Skip Intro</button>
       </div>
     </section>
 
     <div id="work" hidden>
-    <button type="button" id="back-home" class="back">Actions</button>
+    <nav class="work-nav" id="work-nav" aria-label="Move">
+      <button type="button" id="back-home" class="nav-main">Main</button>
+      <div class="work-next">
+        <button type="button" id="go-translate" class="nav-next">Translate</button>
+        <button type="button" id="go-explore" class="nav-next">Explore</button>
+        <button type="button" id="go-situation" class="nav-next">Talk</button>
+      </div>
+    </nav>
     <h1 id="work-title">Translate</h1>
     <div id="scene-stage" class="scene-stage" aria-hidden="true"></div>
     <section class="panel" aria-label="Action">
@@ -1212,6 +1321,7 @@
             <button type="button" id="speed-1" aria-pressed="true">1×</button>
             <button type="button" id="speed-half" aria-pressed="false">0.5×</button>
           </div>
+          <button type="button" id="stop-speech" hidden>Stop</button>
           <p class="sample" id="sheet-note">Press Start.</p>
         </div>
       </div>
@@ -1543,10 +1653,62 @@
 
     let activeRecognition = null;
     let currentAudio = null;
+    let museSession = null;
+    let speechMode = "";
     let motionKind = "";
     let shownScreen = "";
     let speakingCell = null;
     let speechMark = 0;
+    let liveButton = null;
+    let lockedButtons = [];
+    const DICTATE_PAUSE_MS = 5000;
+
+    function unlockOtherButtons() {
+      lockedButtons.forEach((button) => {
+        button.disabled = button.dataset.wasDisabled === "1";
+        button.classList.remove("is-locked");
+        delete button.dataset.wasDisabled;
+        delete button.dataset.locked;
+      });
+      lockedButtons = [];
+    }
+
+    function lockOtherButtons(active) {
+      unlockOtherButtons();
+      document.querySelectorAll("button").forEach((button) => {
+        if (button === active || button.id === "stop-demo") return;
+        button.dataset.wasDisabled = button.disabled ? "1" : "";
+        button.dataset.locked = "1";
+        button.disabled = true;
+        button.classList.add("is-locked");
+        lockedButtons.push(button);
+      });
+    }
+
+    function releaseLiveButton(button) {
+      const target = button || liveButton;
+      if (!target) return;
+      target.classList.remove("is-live");
+      if (target.dataset.idleLabel) target.textContent = target.dataset.idleLabel;
+      if (target.dataset.idleAria) target.setAttribute("aria-label", target.dataset.idleAria);
+      if (liveButton === target) {
+        liveButton = null;
+        unlockOtherButtons();
+      }
+    }
+
+    function showLiveButton(button, liveLabel) {
+      if (!button) return;
+      if (liveButton && liveButton !== button) releaseLiveButton(liveButton);
+      if (!button.dataset.idleLabel) button.dataset.idleLabel = button.textContent;
+      if (!button.dataset.idleAria) button.dataset.idleAria = button.getAttribute("aria-label") || button.textContent;
+      liveButton = button;
+      button.disabled = false;
+      button.classList.add("is-live");
+      button.textContent = liveLabel || "Stop";
+      button.setAttribute("aria-label", "Stop");
+      lockOtherButtons(button);
+    }
 
     function markSpeaking(cell) {
       if (speakingCell) speakingCell.classList.remove("speaking");
@@ -1554,14 +1716,30 @@
       if (speakingCell) speakingCell.classList.add("speaking");
     }
 
+    function showStop(on) {
+      $("stop-speech").hidden = !on;
+    }
+
+    function speechBusy() {
+      return speechMode !== "";
+    }
+
     function stopAudio() {
       speechMark += 1;
+      speechMode = "";
       markSpeaking(null);
+      showStop(false);
+      releaseLiveButton();
       if (currentAudio) {
         currentAudio.pause();
         currentAudio = null;
       }
       if (window.speechSynthesis) window.speechSynthesis.cancel();
+      if (museSession) {
+        const session = museSession;
+        museSession = null;
+        session.stop();
+      }
       if (!activeRecognition) return;
       const rec = activeRecognition;
       activeRecognition = null;
@@ -1576,22 +1754,13 @@
       return "/api/speak";
     }
 
-    async function speakPortuguese(text) {
+    async function speakPortuguese(text, button) {
       const phrase = text.trim();
-      if (!phrase) return;
+      if (!phrase || speechBusy()) return;
       const mark = ++speechMark;
-      if (activeRecognition) {
-        const rec = activeRecognition;
-        activeRecognition = null;
-        rec.onresult = null;
-        rec.onerror = null;
-        rec.onend = null;
-        try { rec.abort(); } catch (err) { /* The recognizer had already stopped. */ }
-      }
-      if (currentAudio) {
-        currentAudio.pause();
-        currentAudio = null;
-      }
+      speechMode = "play";
+      showLiveButton(button);
+      showStop(true);
       $("status").textContent = "European Portuguese…";
       try {
         const response = await fetch(speakEndpoint(), {
@@ -1599,19 +1768,31 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: phrase, rate: state.rate === 0.5 ? 0.5 : 1 })
         });
+        if (mark !== speechMark) return;
         if (!response.ok) throw new Error("speech failed");
         const blob = await response.blob();
+        if (mark !== speechMark) return;
         const url = URL.createObjectURL(blob);
         const audio = new Audio(url);
         currentAudio = audio;
         audio.addEventListener("ended", () => {
           URL.revokeObjectURL(url);
-          if (mark === speechMark) markSpeaking(null);
+          if (currentAudio === audio) currentAudio = null;
+          if (mark !== speechMark) return;
+          speechMode = "";
+          showStop(false);
+          releaseLiveButton(button);
+          markSpeaking(null);
+          $("status").textContent = "";
         }, { once: true });
         await audio.play();
-        $("status").textContent = "European Portuguese";
+        if (mark === speechMark) $("status").textContent = "European Portuguese";
       } catch (err) {
-        if (mark === speechMark) markSpeaking(null);
+        if (mark !== speechMark) return;
+        speechMode = "";
+        showStop(false);
+        releaseLiveButton(button);
+        markSpeaking(null);
         $("status").textContent = "European Portuguese speech did not start. Open this page from the local server.";
       }
     }
@@ -1639,13 +1820,21 @@
       return phrase.replace(/\s+/g, " ").trim();
     }
 
-    function listen(lang, onPhrase, keepGoing) {
+    function listen(lang, onPhrase, keepGoing, fromSay) {
+      if (!fromSay && speechBusy()) return;
       const Ctor = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!Ctor) {
+        if (fromSay) {
+          speechMode = "";
+          showStop(false);
+        }
         $("status").textContent = "This browser has no voice tools.";
         return;
       }
       stopAudio();
+      const mark = ++speechMark;
+      speechMode = "say";
+      showStop(true);
       const rec = new Ctor();
       activeRecognition = rec;
       rec.lang = lang;
@@ -1653,20 +1842,27 @@
       rec.interimResults = !!keepGoing;
       rec.maxAlternatives = 1;
       let silenceTimer = 0;
-      rec.onresult = (event) => {
-        const phrase = heardPhrase(event);
-        if (!phrase) {
-          $("status").textContent = "No speech was heard. Try again.";
-          return;
-        }
-        onPhrase(phrase);
+      let lastSpeechAt = Date.now();
+      const armPause = () => {
         if (!keepGoing) return;
         window.clearTimeout(silenceTimer);
         silenceTimer = window.setTimeout(() => {
           try { rec.stop(); } catch (err) { /* already stopped */ }
-        }, 1400);
+        }, DICTATE_PAUSE_MS);
+      };
+      if (keepGoing) armPause();
+      rec.onresult = (event) => {
+        const phrase = heardPhrase(event);
+        if (!phrase) {
+          if (!keepGoing) $("status").textContent = "No speech was heard. Try again.";
+          return;
+        }
+        lastSpeechAt = Date.now();
+        onPhrase(phrase);
+        armPause();
       };
       rec.onerror = (event) => {
+        if (keepGoing && event.error === "no-speech") return;
         window.clearTimeout(silenceTimer);
         if (event.error === "no-speech") $("status").textContent = "No speech was heard. Try again.";
         else if (event.error === "not-allowed" || event.error === "service-not-allowed") {
@@ -1674,12 +1870,165 @@
         }
       };
       rec.onend = () => {
-        window.clearTimeout(silenceTimer);
         if (activeRecognition === rec) activeRecognition = null;
+        if (mark !== speechMark) return;
+        if (keepGoing && Date.now() - lastSpeechAt < DICTATE_PAUSE_MS) {
+          try {
+            activeRecognition = rec;
+            rec.start();
+            return;
+          } catch (err) { /* The browser would not resume. */ }
+        }
+        window.clearTimeout(silenceTimer);
+        speechMode = "";
+        showStop(false);
+        releaseLiveButton();
+        if ($("status").textContent === "Listening…") $("status").textContent = "";
       };
       try { rec.start(); } catch (err) {
+        window.clearTimeout(silenceTimer);
+        speechMode = "";
+        showStop(false);
         $("status").textContent = "No speech was heard. Try again.";
       }
+    }
+
+    function recorderMime() {
+      if (typeof MediaRecorder === "undefined") return "";
+      if (MediaRecorder.isTypeSupported("audio/webm;codecs=opus")) return "audio/webm;codecs=opus";
+      if (MediaRecorder.isTypeSupported("audio/webm")) return "audio/webm";
+      if (MediaRecorder.isTypeSupported("audio/mp4")) return "audio/mp4";
+      return "";
+    }
+
+    function stopTracks(stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+
+    function recordUntilQuiet(stream) {
+      const mime = recorderMime();
+      const rec = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
+      const chunks = [];
+      rec.ondataavailable = (event) => {
+        if (event.data && event.data.size) chunks.push(event.data);
+      };
+      const ctx = new AudioContext();
+      const source = ctx.createMediaStreamSource(stream);
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 2048;
+      source.connect(analyser);
+      const samples = new Uint8Array(analyser.fftSize);
+      const started = Date.now();
+      let heard = false;
+      let quietSince = 0;
+      return new Promise((resolve) => {
+        const timer = window.setInterval(() => {
+          analyser.getByteTimeDomainData(samples);
+          let sum = 0;
+          for (let i = 0; i < samples.length; i += 1) {
+            const v = (samples[i] - 128) / 128;
+            sum += v * v;
+          }
+          const now = Date.now();
+          if (Math.sqrt(sum / samples.length) > 0.02) {
+            heard = true;
+            quietSince = 0;
+          } else if (heard && !quietSince) {
+            quietSince = now;
+          } else if (heard && now - quietSince > 900) {
+            try { rec.stop(); } catch (err) { /* already stopped */ }
+          }
+          if (now - started > 8000) {
+            try { rec.stop(); } catch (err) { /* already stopped */ }
+          }
+        }, 100);
+        rec.onstop = () => {
+          window.clearInterval(timer);
+          ctx.close();
+          resolve(new Blob(chunks, { type: rec.mimeType || mime || "audio/webm" }));
+        };
+        rec.start();
+        museSession = {
+          stop() {
+            try { rec.stop(); } catch (err) { /* already stopped */ }
+            stopTracks(stream);
+          }
+        };
+      });
+    }
+
+    async function listenWithMuse(lang, onPhrase) {
+      if (speechBusy()) return;
+      if (!navigator.mediaDevices || typeof MediaRecorder === "undefined") {
+        listen(lang, onPhrase, false);
+        return;
+      }
+      const mark = ++speechMark;
+      speechMode = "say";
+      showStop(true);
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (err) {
+        if (mark === speechMark) {
+          speechMode = "";
+          showStop(false);
+          $("status").textContent = "The microphone is blocked. Allow it in the browser, then try again.";
+        }
+        return;
+      }
+      if (mark !== speechMark) {
+        stopTracks(stream);
+        return;
+      }
+      $("status").textContent = "Listening…";
+      let blob;
+      try {
+        blob = await recordUntilQuiet(stream);
+      } finally {
+        stopTracks(stream);
+      }
+      if (mark !== speechMark) return;
+      if (!blob || !blob.size) {
+        speechMode = "";
+        showStop(false);
+        $("status").textContent = "No speech was heard. Try again.";
+        return;
+      }
+      const body = new FormData();
+      body.append("file", blob, "speech.webm");
+      body.append("language", lang);
+      $("status").textContent = "Checking with Muse…";
+      let response;
+      try {
+        response = await fetch("/api/transcribe", { method: "POST", body });
+      } catch (err) {
+        if (mark !== speechMark) return;
+        listen(lang, onPhrase, false, true);
+        return;
+      }
+      if (mark !== speechMark) return;
+      if (response.status === 503) {
+        listen(lang, onPhrase, false, true);
+        return;
+      }
+      if (!response.ok) {
+        speechMode = "";
+        showStop(false);
+        $("status").textContent = "Muse did not hear that. Try again.";
+        return;
+      }
+      const payload = await response.json();
+      if (mark !== speechMark) return;
+      const phrase = (payload.text || "").trim();
+      speechMode = "";
+      showStop(false);
+      if (!phrase) {
+        $("status").textContent = "No speech was heard. Try again.";
+        return;
+      }
+      $("status").textContent = "";
+      onPhrase(phrase);
     }
 
     function playButton(text) {
@@ -1689,8 +2038,12 @@
       button.textContent = "Play";
       button.setAttribute("aria-label", "Play this Portuguese");
       button.addEventListener("click", () => {
+        if (liveButton === button) {
+          stopAudio();
+          return;
+        }
         markSpeaking(button.closest("td"));
-        speakPortuguese(text);
+        speakPortuguese(text, button);
       });
       return button;
     }
@@ -1702,11 +2055,22 @@
       button.textContent = "Say";
       button.setAttribute("aria-label", "Say this Portuguese");
       button.addEventListener("click", () => {
-        listen("pt-PT", (phrase) => {
+        if (liveButton === button) {
+          stopAudio();
+          return;
+        }
+        if (speechMode === "play") return;
+        heard.hidden = true;
+        heard.textContent = "";
+        if (speechBusy()) stopAudio();
+        showLiveButton(button, "Stop");
+        listenWithMuse("pt-PT", (phrase) => {
           heard.hidden = false;
           heard.textContent = sameWords(text, phrase)
             ? "Heard: " + phrase + " Matched."
             : "Heard: " + phrase + " Not the same words.";
+        }).finally(() => {
+          if (liveButton === button) releaseLiveButton(button);
         });
       });
       return button;
@@ -1726,8 +2090,12 @@
               const spoken = spokenToken(part);
               button.addEventListener("click", () => {
                 if (!spoken) return;
+                if (liveButton === button) {
+                  stopAudio();
+                  return;
+                }
                 markSpeaking(button.closest("td"));
-                speakPortuguese(spoken);
+                speakPortuguese(spoken, button);
               });
               target.append(button);
             }
@@ -2208,6 +2576,7 @@
 
     function hideAppIntro() {
       $("app-intro").hidden = true;
+      $("skip-intro").hidden = true;
     }
 
     function cancelAppIntro() {
@@ -2226,6 +2595,7 @@
         ["One thing stands between you and belonging", "\u2014 <span class=\"em\">the language</span>."],
         ["Translate, explore, and talk", "your way into <span class=\"em\">Portugal</span>."]
       ];
+      $("skip-intro").hidden = false;
       $("app-intro").hidden = false;
       for (const lines of screens) {
         if (token !== appIntroToken) return;
@@ -2281,13 +2651,10 @@
       if (!(await waitDemo(650, token))) return;
       $("dir-en-pt").click();
       if (!(await waitDemo(500, token))) return;
-      setDemoSubtitle("Actions returns to the start.", "back-home");
-      if (!(await waitDemo(700, token))) return;
-      goHomeFromWork();
+      revealWorkTop();
+      if (!(await waitForReveal(token))) return;
+      setDemoSubtitle("Jump to Explore.", "go-explore");
       if (!(await waitDemo(800, token))) return;
-
-      setDemoSubtitle("Click Explore.", "act-explore");
-      if (!(await waitDemo(1000, token))) return;
       openAction("explore", true);
       if (!(await waitDemo(850, token))) return;
       setDemoSubtitle("Name a place, e.g. a restaurant.", "subject");
@@ -2325,15 +2692,14 @@
 
       revealWorkTop();
       if (!(await waitForReveal(token))) return;
-      setDemoSubtitle("Back to Actions.", "back-home");
-      if (!(await waitDemo(700, token))) return;
-      goHomeFromWork();
+      setDemoSubtitle("Jump to Talk.", "go-situation");
       if (!(await waitDemo(800, token))) return;
-
-      setDemoSubtitle("Click Talk.", "act-situation");
-      if (!(await waitDemo(1000, token))) return;
       openAction("situation", true);
       if (!(await waitDemo(850, token))) return;
+      setDemoSubtitle("← Main stays on the left.", "back-home");
+      if (!(await waitDemo(800, token))) return;
+      setDemoSubtitle("The other two stay on the right.", "go-translate");
+      if (!(await waitDemo(800, token))) return;
       setDemoSubtitle("Type or dictate keywords.", "keywords");
       if (!(await typeDemo("keywords", "doctor, appointment, payment", token))) return;
       if (!(await waitDemo(650, token))) return;
@@ -2364,7 +2730,7 @@
 
       revealWorkTop();
       if (!(await waitForReveal(token))) return;
-      setDemoSubtitle("Back to Actions.", "back-home");
+      setDemoSubtitle("Main returns you home.", "back-home");
       if (!(await waitDemo(700, token))) return;
       goHomeFromWork();
       if (!(await waitDemo(800, token))) return;
@@ -2742,6 +3108,9 @@
       $("text-field").hidden = !translate;
       const actionName = translate ? "Translate" : explore ? "Explore" : "Talk";
       $("work-title").textContent = actionName;
+      $("go-translate").hidden = translate;
+      $("go-explore").hidden = explore;
+      $("go-situation").hidden = situation;
       $("sheet-title").textContent = translate ? "Translation" : actionName;
       $("sheet-body").className = "sheet-body" + (explore ? " for-explore" : situation ? " for-situation" : "");
       $("start").textContent = state.running ? "Processing…" : "Start";
@@ -2771,9 +3140,10 @@
         return;
       }
 
-      if (explore && !$("subject").value.trim()) {
+      const keptResults = live && liveResult.pairs && liveResult.pairs.length;
+      if (explore && !$("subject").value.trim() && !keptResults) {
         showWarning("Name a place to explore", "Name a place to explore.");
-      } else if (situation && !$("keywords").value.trim()) {
+      } else if (situation && !$("keywords").value.trim() && !keptResults) {
         showWarning("No keywords added", "No keywords added. Add keywords to continue.");
       } else if (situation) {
         if (live && liveResult.options.length) {
@@ -2801,8 +3171,9 @@
         $("explore-answers").hidden = false;
         const brief = live && liveResult.pairs.length ? liveResult.pairs : mergePairsToSingleBlock(guide.brief);
         fillPairs($("view-table"), brief, "en", motion === "sheet");
-        if (guide.query) {
-          $("maps-link").href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(guide.query);
+        const mapsQuery = guide.query || savedMapsQuery;
+        if (mapsQuery) {
+          $("maps-link").href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(mapsQuery);
           $("view-maps").hidden = false;
         }
         $("explore-split").hidden = false;
@@ -2867,64 +3238,122 @@
       }
     }
 
-    function openAction(action, fromDemo) {
-      state.screen = "work";
-      if (!fromDemo) closeDemo();
-      if (action === state.action) {
-        show("action");
-        return;
-      }
-      applyAction(action);
+    const screenMemory = {};
+    let savedMapsQuery = "";
+
+    function copyData(value) {
+      return value == null ? null : JSON.parse(JSON.stringify(value));
     }
 
-    function goHomeFromWork() {
-      state.screen = "home";
-      state.ready = false;
-      state.running = false;
-      state.topic = "";
-      state.pick = "";
-      state.more = "";
-      liveToken += 1;
-      liveResult = null;
-      liveCache = {};
-      window.clearTimeout(runTimer);
-      stopAudio();
+    function clearTypedFields() {
       $("source").value = "";
       $("subject").value = "";
       $("keywords").value = "";
-      clearTypedQuestion();
-      clearSituationQuestion();
-      clearSituationEntry();
-      $("status").textContent = "";
+      $("explore-question").value = "";
+      const extra = $("situation-entry");
+      if (extra) extra.value = "";
       refreshCount();
+    }
+
+    function rememberScreen(action) {
+      if (!action) return;
+      const guide = action === "explore" ? exploreModel($("subject").value) : null;
+      screenMemory[action] = {
+        ready: state.ready,
+        topic: state.topic,
+        pick: state.pick,
+        more: state.more,
+        question: state.question,
+        situationQuestion: state.situationQuestion,
+        direction: state.direction,
+        exploreLength: state.exploreLength,
+        liveResult: copyData(liveResult),
+        situationTopicsOverride: copyData(situationTopicsOverride),
+        situationExtraTopics: copyData(situationExtraTopics) || [],
+        mapsQuery: guide && guide.query ? guide.query : ""
+      };
+    }
+
+    function recallScreen(action) {
+      const saved = screenMemory[action];
+      state.running = false;
+      savedMapsQuery = "";
+      if (!saved) {
+        state.ready = false;
+        state.topic = "";
+        state.pick = "";
+        state.more = "";
+        state.question = "";
+        state.situationQuestion = "";
+        liveResult = null;
+        situationTopicsOverride = null;
+        situationExtraTopics = [];
+        if (action === "explore") setExploreLength("short");
+        return;
+      }
+      state.ready = !!saved.ready;
+      state.topic = saved.topic || "";
+      state.pick = saved.pick || "";
+      state.more = saved.more || "";
+      state.question = saved.question || "";
+      state.situationQuestion = saved.situationQuestion || "";
+      state.direction = saved.direction === "pt-en" ? "pt-en" : "en-pt";
+      press("dir-en-pt", state.direction === "en-pt");
+      press("dir-pt-en", state.direction === "pt-en");
+      setExploreLength(saved.exploreLength);
+      liveResult = copyData(saved.liveResult);
+      situationTopicsOverride = copyData(saved.situationTopicsOverride);
+      situationExtraTopics = copyData(saved.situationExtraTopics) || [];
+      savedMapsQuery = saved.mapsQuery || "";
+    }
+
+    function openAction(action, fromDemo) {
+      const fromHome = state.screen !== "work";
+      state.screen = "work";
+      if (!fromDemo) closeDemo();
+      if (!fromHome && action === state.action) {
+        show("action");
+        return;
+      }
+      applyAction(action, fromHome);
+    }
+
+    function goHomeFromWork() {
+      if (state.screen === "work") rememberScreen(state.action);
+      clearTypedFields();
+      state.screen = "home";
+      state.running = false;
+      liveToken += 1;
+      window.clearTimeout(runTimer);
+      stopAudio();
+      $("status").textContent = "";
       show("action");
     }
 
-    function applyAction(action) {
-      state.action = action;
-      state.ready = false;
-      state.running = false;
-      liveToken += 1;
-      liveResult = null;
-      liveCache = {};
-      state.topic = "";
-      state.pick = "";
-      state.more = "";
-      setExploreLength("short");
-      clearTypedQuestion();
-      clearSituationQuestion();
+    function applyAction(action, fromHome) {
+      stopAudio();
       window.clearTimeout(runTimer);
+      liveToken += 1;
+      if (!fromHome) rememberScreen(state.action);
+      clearTypedFields();
+      state.action = action;
+      recallScreen(action);
       $("status").textContent = "";
       show("action");
     }
 
     function setRate(rate) {
+      if (rate !== state.rate) stopAudio();
       state.rate = rate;
       press("speed-1", rate === 1);
       press("speed-half", rate === 0.5);
     }
     $("speed-1").addEventListener("click", () => setRate(1));
     $("speed-half").addEventListener("click", () => setRate(0.5));
+    $("stop-speech").addEventListener("click", () => {
+      stopAudio();
+      $("status").textContent = "";
+    });
 
     $("start").addEventListener("click", () => {
       if (state.running) return;
@@ -2989,10 +3418,17 @@
     }
 
     loadEditorialVideos();
+    document.addEventListener("pointerdown", (event) => {
+      const button = event.target.closest("button");
+      if (!button || button.disabled) return;
+      button.classList.add("is-pressed");
+      window.setTimeout(() => button.classList.remove("is-pressed"), 220);
+    });
     $("watch-demo").addEventListener("click", () => {
       if (state.demoOpen) closeDemo();
       else openDemo();
     });
+    $("skip-intro").addEventListener("click", cancelAppIntro);
     $("stop-demo").addEventListener("click", closeDemo);
     if (new URLSearchParams(location.search).get("autodemo") === "1") openDemo();
     else runAppIntro();
@@ -3001,6 +3437,9 @@
     $("act-explore").addEventListener("click", () => openAction("explore"));
     $("act-situation").addEventListener("click", () => openAction("situation"));
     $("back-home").addEventListener("click", goHomeFromWork);
+    $("go-translate").addEventListener("click", () => openAction("translate"));
+    $("go-explore").addEventListener("click", () => openAction("explore"));
+    $("go-situation").addEventListener("click", () => openAction("situation"));
     function applyDirection(direction) {
       if (state.direction === direction) return;
       state.direction = direction;
@@ -3086,39 +3525,68 @@
       situationTopicsOverride = null;
       markDraft();
     });
-    $("dictate-source").addEventListener("click", () => {
-      $("source").value = "";
-      $("status").textContent = "Listening…";
-      refreshCount();
-      listen(state.direction === "pt-en" ? "pt-PT" : "en-US", (phrase) => {
-        $("source").value = phrase;
+    function startDictate(button, prepare, lang, onPhrase) {
+      if (liveButton === button && speechMode === "say") {
+        stopAudio();
         $("status").textContent = "";
+        return;
+      }
+      if (speechMode === "play") return;
+      prepare();
+      $("status").textContent = "Listening…";
+      listen(lang, onPhrase, true);
+      if (speechMode === "say") showLiveButton(button, "Stop");
+    }
+
+    function pulseTyping(button) {
+      if (!button || speechBusy()) return;
+      button.classList.add("is-live");
+      window.clearTimeout(button._typeTimer);
+      button._typeTimer = window.setTimeout(() => {
+        if (liveButton !== button) button.classList.remove("is-live");
+      }, 800);
+    }
+
+    ["dictate-source", "dictate-subject", "dictate-keywords"].forEach((id) => {
+      $(id).dataset.idleLabel = "Dictate";
+    });
+    $("dictate-source").addEventListener("click", () => {
+      startDictate($("dictate-source"), () => {
+        $("source").value = "";
         refreshCount();
-      }, true);
+      }, state.direction === "pt-en" ? "pt-PT" : "en-US", (phrase) => {
+        $("source").value = phrase;
+        refreshCount();
+      });
     });
     $("dictate-subject").addEventListener("click", () => {
-      $("subject").value = "";
-      $("status").textContent = "Listening…";
-      markDraft();
-      listen("en-US", (phrase) => {
-        $("subject").value = phrase;
-        $("status").textContent = "";
+      startDictate($("dictate-subject"), () => {
+        $("subject").value = "";
         markDraft();
-      }, true);
+      }, "en-US", (phrase) => {
+        $("subject").value = phrase;
+        markDraft();
+        if (speechMode === "say") $("status").textContent = "Listening…";
+      });
     });
     $("dictate-keywords").addEventListener("click", () => {
-      $("keywords").value = "";
-      $("status").textContent = "Listening…";
-      listen("en-US", (phrase) => {
+      startDictate($("dictate-keywords"), () => {
+        $("keywords").value = "";
+      }, "en-US", (phrase) => {
         $("keywords").value = phrase;
-        $("status").textContent = "";
         if (state.action === "situation" && state.ready) {
           refreshCount();
           return;
         }
         markDraft();
-      }, true);
+        if (speechMode === "say") $("status").textContent = "Listening…";
+      });
     });
+    $("source").addEventListener("input", () => pulseTyping($("dictate-source")));
+    $("subject").addEventListener("input", () => pulseTyping($("dictate-subject")));
+    $("keywords").addEventListener("input", () => pulseTyping($("dictate-keywords")));
+    $("explore-question").addEventListener("input", () => pulseTyping($("explore-ask")));
+    $("situation-entry").addEventListener("input", () => pulseTyping($("situation-entry-send")));
 
     $("copy").addEventListener("click", async () => {
       const text = plainExport();
