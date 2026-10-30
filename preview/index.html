@@ -14,11 +14,11 @@
       --line: light-dark(rgb(0 0 0 / 8%), rgb(255 255 255 / 14%));
       --en: light-dark(#0f6e56, #9ed9c4);
       --en-wash: light-dark(#e5f6ef, #16332b);
-      --en-ink: light-dark(#0c3d32, #d4f3e6);
+      --en-ink: light-dark(#04261c, #f4fff9);
       --pt: light-dark(#1d4e89, #8eb7e8);
       --pt-fill: #1d4e89;
       --pt-wash: light-dark(#e8f1fb, #1a2c40);
-      --pt-ink: light-dark(#14365f, #d6e7fa);
+      --pt-ink: light-dark(#07182c, #ffffff);
       --note: light-dark(#f8f1dc, #3a3018);
       --note-ink: light-dark(#6b4e16, #f3e2b8);
       --warn: light-dark(#fdecec, #3a2222);
@@ -444,70 +444,6 @@
       animation: demo-finish 680ms cubic-bezier(.16, .84, .32, 1) both;
     }
 
-    .demo-subtitle::after {
-      content: "";
-      position: absolute;
-      height: 2px;
-      width: 54px;
-      background: linear-gradient(90deg, color-mix(in srgb, var(--call-line) 74%, transparent), color-mix(in srgb, var(--call-line) 98%, transparent));
-      top: var(--arrow-y, 14px);
-      border-radius: 99px;
-    }
-
-    .demo-subtitle.arrow-down::after {
-      left: 18px;
-      top: calc(100% + 7px);
-      width: 2px;
-      height: 36px;
-    }
-
-    .demo-subtitle.arrow-up::after {
-      left: 18px;
-      top: -43px;
-      width: 2px;
-      height: 36px;
-    }
-
-    .demo-subtitle.arrow-right::after {
-      left: calc(100% + 10px);
-    }
-
-    .demo-subtitle.arrow-left::after {
-      right: calc(100% + 10px);
-      left: auto;
-      transform: rotate(180deg);
-    }
-
-    .demo-subtitle::before {
-      content: "";
-      position: absolute;
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: color-mix(in srgb, var(--call-line) 96%, transparent);
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--card) 92%, transparent);
-    }
-
-    .demo-subtitle.arrow-right::before {
-      left: calc(100% + 62px);
-      top: calc(var(--arrow-y, 14px) - 4px);
-    }
-
-    .demo-subtitle.arrow-left::before {
-      right: calc(100% + 62px);
-      top: calc(var(--arrow-y, 14px) - 4px);
-    }
-
-    .demo-subtitle.arrow-up::before {
-      left: 14px;
-      top: -49px;
-    }
-
-    .demo-subtitle.arrow-down::before {
-      left: 14px;
-      top: calc(100% + 39px);
-    }
-
     .scene, .scene-stage {
       width: 100%;
       background: light-dark(#eef3f8, #2c2c2e);
@@ -563,8 +499,6 @@
       padding: 4px 0;
     }
 
-    .nav-main::before { content: "←\00a0"; }
-    .nav-next::before { content: "→\00a0"; }
 
     #work h1 { max-width: none; font-size: 40px; }
 
@@ -938,6 +872,8 @@
 
     .en { background: var(--en-wash); color: var(--en-ink); }
     .pt { background: var(--pt-wash); color: var(--pt-ink); }
+    .en .word { color: var(--en-ink); }
+    .pt .word { color: var(--pt-ink); }
 
     .label-row {
       display: flex;
@@ -949,6 +885,14 @@
     .label-row label.block { margin-bottom: 0; }
 
     .spoken {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .phrase-row {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
@@ -1033,10 +977,28 @@
       opacity: 1;
     }
 
-    .word.is-locked {
+    .word.is-locked,
+    .word:disabled {
       background: transparent;
-      color: light-dark(#a39d94, #6e6860);
+      color: inherit;
+      opacity: 1;
       cursor: not-allowed;
+    }
+
+    .word.is-missed,
+    .word.is-missed.is-locked,
+    .word.is-missed:disabled,
+    .heard .is-missed {
+      background: light-dark(#f8d0d0, #7a3333);
+      color: light-dark(#5c1010, #fff6f6);
+      border-radius: 4px;
+      box-shadow: none;
+      opacity: 1;
+    }
+
+    .word.is-missed.is-live {
+      background: #0f6e56;
+      color: #f4fbf8;
     }
 
     .action-tiles button.is-locked .scene,
@@ -1046,12 +1008,25 @@
     }
 
     .heard {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 4px;
       width: 100%;
-      margin-top: 6px;
-      color: var(--muted);
-      font: 13px/1.4 ui-sans-serif, system-ui, sans-serif;
+      margin: 0;
+      color: var(--pt-ink);
+      font: 600 16px/1.45 ui-sans-serif, system-ui, sans-serif;
     }
+
+    .heard-ok, .heard-wrong, .heard-sounds { display: block; }
+
+    .heard-ok, .heard-wrong { font-size: 18px; }
+
+    .heard-ok { color: light-dark(#0c3d32, #b6f5d8); }
+
+    .heard-wrong { color: light-dark(#6e1212, #ffd6d6); }
+
+    .heard[hidden] { display: none !important; }
 
     .pair p {
       margin: 0;
@@ -1687,7 +1662,7 @@
     function lockOtherButtons(active) {
       unlockOtherButtons();
       document.querySelectorAll("button").forEach((button) => {
-        if (button === active || button.id === "stop-demo") return;
+        if (button === active || button.id === "stop-demo" || button.classList.contains("sound")) return;
         button.dataset.wasDisabled = button.disabled ? "1" : "";
         button.dataset.locked = "1";
         button.disabled = true;
@@ -1735,6 +1710,21 @@
       return speechMode !== "";
     }
 
+    function releaseMic() {
+      if (museSession) {
+        const session = museSession;
+        museSession = null;
+        try { session.stop(); } catch (err) { /* The recorder had already stopped. */ }
+      }
+      if (!activeRecognition) return;
+      const rec = activeRecognition;
+      activeRecognition = null;
+      rec.onresult = null;
+      rec.onerror = null;
+      rec.onend = null;
+      try { rec.abort(); } catch (err) { /* The recognizer had already stopped. */ }
+    }
+
     function stopAudio() {
       speechMark += 1;
       speechMode = "";
@@ -1746,18 +1736,7 @@
         currentAudio = null;
       }
       if (window.speechSynthesis) window.speechSynthesis.cancel();
-      if (museSession) {
-        const session = museSession;
-        museSession = null;
-        session.stop();
-      }
-      if (!activeRecognition) return;
-      const rec = activeRecognition;
-      activeRecognition = null;
-      rec.onresult = null;
-      rec.onerror = null;
-      rec.onend = null;
-      try { rec.abort(); } catch (err) { /* The recognizer had already stopped. */ }
+      releaseMic();
     }
 
     function speakEndpoint() {
@@ -1815,7 +1794,13 @@
 
     async function speakPortuguese(text, button) {
       const phrase = text.trim();
-      if (!phrase || speechBusy()) return;
+      if (!phrase) return;
+      if (speechMode === "play" && liveButton === button) {
+        stopAudio();
+        return;
+      }
+      if (speechBusy()) stopAudio();
+      else releaseMic();
       const mark = ++speechMark;
       const sentences = speechSentences(phrase);
       speechMode = "play";
@@ -1831,19 +1816,18 @@
           const played = await playSpeechBlob(blob, mark);
           if (!played || mark !== speechMark) return;
         }
-        if (mark !== speechMark) return;
-        speechMode = "";
-        showStop(false);
-        releaseLiveButton(button);
-        markSpeaking(null);
-        $("status").textContent = "";
       } catch (err) {
-        if (mark !== speechMark) return;
-        speechMode = "";
-        showStop(false);
-        releaseLiveButton(button);
-        markSpeaking(null);
-        $("status").textContent = "European Portuguese speech did not start. Open this page from the local server.";
+        if (mark === speechMark) {
+          $("status").textContent = "European Portuguese speech did not start. Open this page from the local server.";
+        }
+      } finally {
+        if (mark === speechMark) {
+          speechMode = "";
+          showStop(false);
+          releaseLiveButton(button);
+          markSpeaking(null);
+          if ($("status").textContent === "European Portuguese…") $("status").textContent = "";
+        }
       }
     }
 
@@ -1855,10 +1839,102 @@
       return text.normalize("NFC").toLowerCase().replace(/[^\p{L}\p{N}\s]+/gu, " ").trim().split(/\s+/).filter(Boolean);
     }
 
-    function sameWords(left, right) {
-      const a = speechWords(left);
-      const b = speechWords(right);
-      return a.length === b.length && a.every((word, index) => word === b[index]);
+    function speechKey(token) {
+      return speechWords(token).join("");
+    }
+
+    function alignSpeech(expectedKeys, heardKeys) {
+      const n = expectedKeys.length;
+      const m = heardKeys.length;
+      const scores = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+      for (let i = n - 1; i >= 0; i -= 1) {
+        for (let j = m - 1; j >= 0; j -= 1) {
+          scores[i][j] = expectedKeys[i] === heardKeys[j]
+            ? scores[i + 1][j + 1] + 1
+            : Math.max(scores[i + 1][j], scores[i][j + 1]);
+        }
+      }
+      const missedExpected = [];
+      const missedHeard = [];
+      const pairs = [];
+      let i = 0;
+      let j = 0;
+      while (i < n && j < m) {
+        if (expectedKeys[i] === heardKeys[j]) {
+          i += 1;
+          j += 1;
+        } else {
+          const skipExpected = scores[i + 1][j];
+          const skipHeard = scores[i][j + 1];
+          const replaceBoth = scores[i + 1][j + 1];
+          if (replaceBoth >= skipExpected && replaceBoth >= skipHeard) {
+            missedExpected.push(i);
+            missedHeard.push(j);
+            pairs.push([i, j]);
+            i += 1;
+            j += 1;
+          } else if (skipExpected > skipHeard) {
+            missedExpected.push(i);
+            pairs.push([i, -1]);
+            i += 1;
+          } else {
+            missedHeard.push(j);
+            pairs.push([-1, j]);
+            j += 1;
+          }
+        }
+      }
+      while (i < n) {
+        missedExpected.push(i);
+        pairs.push([i, -1]);
+        i += 1;
+      }
+      while (j < m) {
+        missedHeard.push(j);
+        pairs.push([-1, j]);
+        j += 1;
+      }
+      return { missedExpected, missedHeard, pairs };
+    }
+
+    function clearMissed(wordsEl) {
+      if (!wordsEl) return;
+      wordsEl.querySelectorAll(".word.is-missed").forEach((button) => button.classList.remove("is-missed"));
+    }
+
+    function showComparison(wordsEl, heardEl, phrase, final) {
+      const buttons = [...wordsEl.querySelectorAll("button.word")].filter((button) => spokenToken(button.textContent));
+      clearMissed(wordsEl);
+      const expectedDisplay = buttons.map((button) => spokenToken(button.textContent));
+      const expectedKeys = expectedDisplay.map((token) => speechKey(token));
+      const heardParts = phrase.split(/(\s+)/).filter((part) => part);
+      const heardDisplay = [];
+      const heardKeys = [];
+      heardParts.forEach((part) => {
+        if (/^\s+$/.test(part)) return;
+        const key = speechKey(part);
+        if (!key) return;
+        heardDisplay.push(part);
+        heardKeys.push(key);
+      });
+      const aligned = alignSpeech(expectedKeys, heardKeys);
+      aligned.missedExpected.forEach((index) => buttons[index].classList.add("is-missed"));
+      heardEl.hidden = false;
+      heardEl.replaceChildren();
+      const sounds = document.createElement("span");
+      sounds.className = "heard-sounds";
+      const lead = document.createElement("span");
+      lead.textContent = "Sounds like: ";
+      sounds.append(lead);
+      heardDisplay.forEach((part, index) => {
+        if (index) sounds.append(" ");
+        const span = document.createElement("span");
+        span.textContent = part;
+        if (aligned.missedHeard.includes(index)) span.className = "is-missed";
+        sounds.append(span);
+      });
+      if (!final) sounds.append(" …");
+      heardEl.append(sounds);
     }
 
     function heardPhrase(event) {
@@ -1955,7 +2031,38 @@
       stream.getTracks().forEach((track) => track.stop());
     }
 
-    function recordUntilQuiet(stream) {
+    function endRecording(rec) {
+      if (rec.state !== "recording") return;
+      try { rec.requestData(); } catch (err) { /* This browser has no requestData. */ }
+      try { rec.stop(); } catch (err) { /* already stopped */ }
+    }
+
+    function openRecognition(lang, mark, onPartial) {
+      const live = { phrase: "" };
+      const Ctor = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!Ctor) return live;
+      const rec = new Ctor();
+      activeRecognition = rec;
+      rec.lang = lang;
+      rec.continuous = true;
+      rec.interimResults = true;
+      rec.maxAlternatives = 1;
+      rec.onresult = (event) => {
+        if (mark !== speechMark) return;
+        const phrase = heardPhrase(event);
+        if (!phrase) return;
+        live.phrase = phrase;
+        if (onPartial) onPartial(phrase);
+      };
+      rec.onend = () => {
+        if (activeRecognition !== rec || mark !== speechMark) return;
+        try { rec.start(); } catch (err) { /* The browser ended the session. */ }
+      };
+      try { rec.start(); } catch (err) { /* Recognition can fail while Muse still records. */ }
+      return live;
+    }
+
+    async function recordUntilQuiet(stream, live) {
       const mime = recorderMime();
       const rec = new MediaRecorder(stream, mime ? { mimeType: mime } : undefined);
       const chunks = [];
@@ -1963,134 +2070,170 @@
         if (event.data && event.data.size) chunks.push(event.data);
       };
       const ctx = new AudioContext();
+      try { await ctx.resume(); } catch (err) { /* The meter can stay quiet. Recognition still ends the clip. */ }
       const source = ctx.createMediaStreamSource(stream);
       const analyser = ctx.createAnalyser();
       analyser.fftSize = 2048;
       source.connect(analyser);
       const samples = new Uint8Array(analyser.fftSize);
       const started = Date.now();
-      let heard = false;
+      let spoke = false;
       let quietSince = 0;
+      let lastPhrase = "";
       return new Promise((resolve) => {
-        const timer = window.setInterval(() => {
-          analyser.getByteTimeDomainData(samples);
-          let sum = 0;
-          for (let i = 0; i < samples.length; i += 1) {
-            const v = (samples[i] - 128) / 128;
-            sum += v * v;
-          }
-          const now = Date.now();
-          if (Math.sqrt(sum / samples.length) > 0.02) {
-            heard = true;
-            quietSince = 0;
-          } else if (heard && !quietSince) {
-            quietSince = now;
-          } else if (heard && now - quietSince > 900) {
-            try { rec.stop(); } catch (err) { /* already stopped */ }
-          }
-          if (now - started > 8000) {
-            try { rec.stop(); } catch (err) { /* already stopped */ }
-          }
-        }, 100);
-        rec.onstop = () => {
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
           window.clearInterval(timer);
-          ctx.close();
+          try { ctx.close(); } catch (err) { /* already closed */ }
           resolve(new Blob(chunks, { type: rec.mimeType || mime || "audio/webm" }));
         };
-        rec.start();
-        museSession = {
-          stop() {
-            try { rec.stop(); } catch (err) { /* already stopped */ }
-            stopTracks(stream);
+        const timer = window.setInterval(() => {
+          const now = Date.now();
+          if (ctx.state === "running") {
+            analyser.getByteTimeDomainData(samples);
+            let sum = 0;
+            for (let i = 0; i < samples.length; i += 1) {
+              const v = (samples[i] - 128) / 128;
+              sum += v * v;
+            }
+            if (Math.sqrt(sum / samples.length) > 0.008) {
+              spoke = true;
+              quietSince = 0;
+            }
           }
-        };
+          const phrase = live && live.phrase ? live.phrase : "";
+          if (phrase && phrase !== lastPhrase) {
+            spoke = true;
+            quietSince = 0;
+            lastPhrase = phrase;
+          }
+          if (spoke && !quietSince) quietSince = now;
+          if ((spoke && quietSince && now - quietSince > 1200) || now - started > 7000) {
+            window.clearInterval(timer);
+            if (rec.state === "recording") endRecording(rec);
+            else finish();
+            window.setTimeout(finish, 600);
+          }
+        }, 100);
+        rec.onstop = finish;
+        rec.onerror = finish;
+        try { rec.start(250); } catch (err) {
+          try { rec.start(); } catch (startErr) { finish(); }
+        }
+        museSession = { stop() { endRecording(rec); window.setTimeout(finish, 600); } };
       });
     }
 
-    async function listenWithMuse(lang, onPhrase) {
-      if (speechBusy()) return;
-      if (!navigator.mediaDevices || typeof MediaRecorder === "undefined") {
-        listen(lang, onPhrase, false);
-        return;
-      }
-      const mark = ++speechMark;
-      speechMode = "say";
-      showStop(true);
-      let stream;
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      } catch (err) {
-        if (mark === speechMark) {
-          speechMode = "";
-          showStop(false);
-          $("status").textContent = "The microphone is blocked. Allow it in the browser, then try again.";
-        }
-        return;
-      }
-      if (mark !== speechMark) {
-        stopTracks(stream);
-        return;
-      }
-      $("status").textContent = "Listening…";
-      let blob;
-      try {
-        blob = await recordUntilQuiet(stream);
-      } finally {
-        stopTracks(stream);
-      }
-      if (mark !== speechMark) return;
-      if (!blob || !blob.size) {
-        speechMode = "";
-        showStop(false);
-        $("status").textContent = "No speech was heard. Try again.";
-        return;
-      }
+    function waitForPhrase(live, mark) {
+      return new Promise((resolve) => {
+        const started = Date.now();
+        let last = "";
+        let quietSince = 0;
+        const timer = window.setInterval(() => {
+          const now = Date.now();
+          if (mark !== speechMark || (live.phrase && quietSince && now - quietSince > 1200) || now - started > 7000) {
+            window.clearInterval(timer);
+            resolve();
+            return;
+          }
+          if (live.phrase && live.phrase !== last) {
+            last = live.phrase;
+            quietSince = 0;
+          } else if (live.phrase && !quietSince) {
+            quietSince = now;
+          }
+        }, 100);
+      });
+    }
+
+    async function museTranscript(blob, lang, mark) {
       const body = new FormData();
       body.append("file", blob, "speech.webm");
       body.append("language", lang);
       $("status").textContent = "Checking with Muse…";
-      let response;
       try {
-        response = await fetch("/api/transcribe", { method: "POST", body });
+        const response = await fetch("/api/transcribe", { method: "POST", body });
+        if (mark !== speechMark || !response.ok) return "";
+        const payload = await response.json();
+        return (payload.text || "").trim();
       } catch (err) {
-        if (mark !== speechMark) return;
-        listen(lang, onPhrase, false, true);
-        return;
+        return "";
       }
-      if (mark !== speechMark) return;
-      if (response.status === 503) {
-        listen(lang, onPhrase, false, true);
-        return;
-      }
-      if (!response.ok) {
-        speechMode = "";
-        showStop(false);
-        $("status").textContent = "Muse did not hear that. Try again.";
-        return;
-      }
-      const payload = await response.json();
-      if (mark !== speechMark) return;
-      const phrase = (payload.text || "").trim();
-      speechMode = "";
-      showStop(false);
-      if (!phrase) {
-        $("status").textContent = "No speech was heard. Try again.";
-        return;
-      }
-      $("status").textContent = "";
-      onPhrase(phrase);
     }
 
-    function playButton(text) {
+    function endSay(mark, onNote, message) {
+      if (mark !== speechMark) return false;
+      speechMode = "";
+      showStop(false);
+      if (message) {
+        onNote(message);
+        $("status").textContent = message;
+      } else if ($("status").textContent === "Listening…" || $("status").textContent === "Checking with Muse…") {
+        $("status").textContent = "";
+      }
+      return true;
+    }
+
+    async function listenWithMuse(lang, onPhrase, onNote, onPartial) {
+      const note = onNote || (() => {});
+      const mark = ++speechMark;
+      speechMode = "say";
+      showStop(true);
+      $("status").textContent = "Listening…";
+      const live = openRecognition(lang, mark, onPartial);
+      let stream = null;
+      let blob = null;
+      if (navigator.mediaDevices && typeof MediaRecorder !== "undefined") {
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (err) {
+          stream = null;
+        }
+      }
+      if (mark !== speechMark) {
+        if (stream) stopTracks(stream);
+        return;
+      }
+      if (stream) {
+        try {
+          blob = await recordUntilQuiet(stream, live);
+        } catch (err) {
+          blob = null;
+        } finally {
+          stopTracks(stream);
+        }
+      } else {
+        await waitForPhrase(live, mark);
+      }
+      if (mark !== speechMark) return;
+      let phrase = (live.phrase || "").trim();
+      if (blob && blob.size) {
+        const muse = await museTranscript(blob, lang, mark);
+        if (muse) phrase = muse;
+      }
+      releaseMic();
+      if (!endSay(mark, note)) return;
+      if (phrase) onPhrase(phrase);
+      else note("No speech was heard. Try again.");
+    }
+
+    function playButton(text, heard, words) {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "sound";
       button.textContent = "Play";
       button.setAttribute("aria-label", "Play this Portuguese");
       button.addEventListener("click", () => {
-        if (liveButton === button) {
+        if (speechMode === "play" && liveButton === button) {
           stopAudio();
           return;
+        }
+        clearMissed(words);
+        if (heard) {
+          heard.hidden = true;
+          heard.textContent = "";
         }
         markSpeaking(button.closest("td"));
         speakPortuguese(text, button);
@@ -2098,7 +2241,7 @@
       return button;
     }
 
-    function practiceButton(text, heard) {
+    function practiceButton(text, heard, words) {
       const button = document.createElement("button");
       button.type = "button";
       button.className = "mic";
@@ -2107,18 +2250,24 @@
       button.addEventListener("click", () => {
         if (liveButton === button) {
           stopAudio();
+          clearMissed(words);
+          heard.hidden = true;
+          heard.textContent = "";
           return;
         }
-        if (speechMode === "play") return;
-        heard.hidden = true;
-        heard.textContent = "";
         if (speechBusy()) stopAudio();
+        clearMissed(words);
+        heard.hidden = false;
+        heard.textContent = "Listening…";
         showLiveButton(button, "Stop");
         listenWithMuse("pt-PT", (phrase) => {
+          showComparison(words, heard, phrase, true);
+        }, (message) => {
+          clearMissed(words);
           heard.hidden = false;
-          heard.textContent = sameWords(text, phrase)
-            ? "Heard: " + phrase + " Matched."
-            : "Heard: " + phrase + " Not the same words.";
+          heard.textContent = message;
+        }, (partial) => {
+          showComparison(words, heard, partial, false);
         }).finally(() => {
           if (liveButton === button) releaseLiveButton(button);
         });
@@ -2171,8 +2320,11 @@
       const heard = document.createElement("span");
       heard.className = "heard";
       heard.hidden = true;
-      spoken.append(words, playButton(text), practiceButton(text, heard));
-      el.replaceChildren(spoken, heard);
+      const row = document.createElement("span");
+      row.className = "phrase-row";
+      row.append(words, playButton(text, heard, words), practiceButton(text, heard, words));
+      spoken.append(row, heard);
+      el.replaceChildren(spoken);
     }
 
     function sentencesOf(text) {
@@ -2442,7 +2594,6 @@
 
     function positionDemoSubtitle(focusEl) {
       const bubble = $("demo-subtitle");
-      bubble.classList.remove("arrow-up", "arrow-down", "arrow-left", "arrow-right");
       const pad = 12;
       const vw = window.innerWidth;
       const vh = window.innerHeight;
@@ -2459,19 +2610,14 @@
           bubble.style.left = Math.round(rightLaneLeft) + "px";
           bubble.style.right = "auto";
           bubble.style.top = Math.round(Math.max(pad, pageRect.top)) + "px";
-          bubble.style.setProperty("--arrow-y", "14px");
-          bubble.classList.add("arrow-left");
         } else if (leftLaneFits) {
           bubble.style.left = Math.round(leftLaneLeft) + "px";
           bubble.style.right = "auto";
           bubble.style.top = Math.round(Math.max(pad, pageRect.top)) + "px";
-          bubble.style.setProperty("--arrow-y", "14px");
-          bubble.classList.add("arrow-right");
         } else {
           bubble.style.left = "18px";
           bubble.style.right = "auto";
           bubble.style.top = "18px";
-          bubble.classList.add("arrow-down");
         }
         return;
       }
@@ -2479,30 +2625,22 @@
       const targetCenter = rect.top + (rect.height / 2);
       let left = 18;
       let top = 18;
-      let arrow = "arrow-left";
       if (rightLaneFits) {
         left = rightLaneLeft;
         top = Math.max(pad, Math.min(targetCenter - (bubbleRect.height / 2), vh - bubbleRect.height - pad));
-        arrow = "arrow-left";
       } else if (leftLaneFits) {
         left = leftLaneLeft;
         top = Math.max(pad, Math.min(targetCenter - (bubbleRect.height / 2), vh - bubbleRect.height - pad));
-        arrow = "arrow-right";
       } else {
         left = Math.max(pad, Math.min(rect.left, vw - bubbleRect.width - pad));
         top = rect.bottom + 14;
-        arrow = "arrow-up";
         if (top + bubbleRect.height > vh - pad) {
           top = Math.max(pad, rect.top - bubbleRect.height - 14);
-          arrow = "arrow-down";
         }
       }
-      const arrowY = Math.max(8, Math.min(targetCenter - top - 8, bubbleRect.height - 16));
       bubble.style.left = Math.round(left) + "px";
       bubble.style.right = "auto";
       bubble.style.top = Math.round(top) + "px";
-      bubble.style.setProperty("--arrow-y", Math.round(arrowY) + "px");
-      bubble.classList.add(arrow);
     }
 
     function smoothRevealTo(target) {
@@ -2671,8 +2809,6 @@
       setDemoSubtitle("Type or dictate English text.", "source");
       if (!(await typeDemo("source", "The train leaves at nine.", token))) return;
       if (!(await waitDemo(650, token))) return;
-      setDemoSubtitle("Click Start.", "start");
-      if (!(await waitDemo(650, token))) return;
       $("start").click();
       if (!(await waitForReveal(token))) return;
       if (!(await waitDemo(450, token))) return;
@@ -2680,14 +2816,31 @@
       focusFirstPlayButton();
       if (!(await waitDemo(800, token))) return;
 
+      const sayButton = document.querySelector("#view-table button.mic");
+      const saidWords = document.querySelector("#view-table .words");
+      const saidLine = document.querySelector("#view-table .heard");
+      if (sayButton && saidWords && saidLine) {
+        setDemoSubtitle("Say shows how it sounded, under the phrase.", "");
+        clearDemoFocus();
+        sayButton.classList.add("demo-focus", "demo-tap");
+        requestAnimationFrame(() => positionDemoSubtitle(sayButton));
+        const spoken = saidWords.textContent.replace(/\s+/g, " ").trim().split(" ").filter(Boolean);
+        showComparison(saidWords, saidLine, spoken.length > 1 ? spoken.slice(0, -1).join(" ") : spoken.join(" "), true);
+        if (!(await waitDemo(1400, token))) return;
+        setDemoSubtitle("Play clears that line.", "");
+        focusFirstPlayButton();
+        clearMissed(saidWords);
+        saidLine.hidden = true;
+        saidLine.textContent = "";
+        if (!(await waitDemo(700, token))) return;
+      }
+
       revealWorkTop();
       if (!(await waitForReveal(token))) return;
       $("dir-pt-en").click();
       if (!(await waitDemo(400, token))) return;
       setDemoSubtitle("Type or dictate Portuguese text.", "source");
       if (!(await typeDemo("source", "O comboio parte às nove.", token))) return;
-      if (!(await waitDemo(650, token))) return;
-      setDemoSubtitle("Click Start.", "start");
       if (!(await waitDemo(650, token))) return;
       $("start").click();
       if (!(await waitForReveal(token))) return;
@@ -2712,8 +2865,6 @@
       if (!(await waitDemo(700, token))) return;
       $("explore-long").click();
       if (!(await waitDemo(500, token))) return;
-      setDemoSubtitle("Click Start.", "start");
-      if (!(await waitDemo(700, token))) return;
       $("start").click();
       if (!(await waitForReveal(token))) return;
       if (!(await waitDemo(450, token))) return;
@@ -2745,8 +2896,6 @@
       setDemoSubtitle("Type or dictate keywords.", "keywords");
       if (!(await typeDemo("keywords", "doctor, appointment, payment", token))) return;
       if (!(await waitDemo(650, token))) return;
-      setDemoSubtitle("Click Start.", "start");
-      if (!(await waitDemo(700, token))) return;
       $("start").click();
       if (!(await waitForReveal(token))) return;
       if (!(await waitDemo(450, token))) return;
@@ -2769,15 +2918,6 @@
       if (!(await waitDemo(450, token))) return;
       setDemoSubtitle("A new question brings new choices.", "view-topics");
       if (!(await waitDemo(1300, token))) return;
-
-      revealWorkTop();
-      if (!(await waitForReveal(token))) return;
-      setDemoSubtitle("Back to Translate, without Main.", "go-translate");
-      if (!(await waitDemo(450, token))) return;
-      openAction("translate", true);
-      if (!(await waitDemo(500, token))) return;
-      setDemoSubtitle("The result is still here.", "view-table");
-      if (!(await waitDemo(900, token))) return;
 
       revealWorkTop();
       if (!(await waitForReveal(token))) return;
