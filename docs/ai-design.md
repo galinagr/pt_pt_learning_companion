@@ -162,9 +162,12 @@ This is a transparent “control-plane” endpoint for debugging and product tun
 - Separates speech/media pipelines so text costs do not absorb everything
 - Exposes knobs in config instead of code for rapid tuning without redeploy
 
-## 10) Next implementation steps
+## 10) Response cache
+
+Running, not a later step. `POST /api/generate` checks an in-memory hash cache before the model call and returns `cached: true` on a repeat. The page keeps a separate `liveCache` for the current load. Speech is not cached. The rules are in [Where the cache runs](meta-model-architecture.md#where-the-cache-runs).
+
+## 11) Next implementation steps
 
 1. Add persistent telemetry (latency, cost units, escalation ratio)
-2. Add cache layer for repeated prompts
-3. Add quality heuristics to trigger Wonder only on measurable need
-4. Add background jobs for batch generation on Spark Open
+2. Add quality heuristics to trigger Wonder only on measurable need
+3. Add background jobs for batch generation on Spark Open

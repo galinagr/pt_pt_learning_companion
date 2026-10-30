@@ -21,9 +21,10 @@ This ADR was re-checked against the codebase and remains accurate:
 
 - `POST /api/model-plan` exists (`src/pt_pt_learning_companion/app.py`) and returns routing decisions via `plan_model_route` (`src/pt_pt_learning_companion/ai_router.py`).
 - `POST /api/generate` now **executes** the plan via `RoutedTextService` (`src/pt_pt_learning_companion/ai_models.py`): Spark default, Wonder escalation on low-confidence `quality=high`, and Spark Open fallback on error or strict budget. It returns the route taken and token usage. A stub client keeps this working with no key.
+- Identical generate requests are served from an in-memory response cache (`response_cache.py`) before the model runs. See [Where the cache runs](../meta-model-architecture.md#where-the-cache-runs).
 - Request-level controls `quality`, `budget_mode`, and `require_managed` are implemented in `ModelPlanRequest` (`src/pt_pt_learning_companion/schemas.py`).
 - Model-role and budget env vars are scaffolded in `.env.example`; set `MODEL_API_KEY` to route to real models.
-- Still pending: a real confidence signal for escalation (the live client currently reports full confidence), persisted telemetry, caching, and budget enforcement.
+- Still pending: a real confidence signal for escalation (the live client currently reports full confidence), persisted telemetry, and budget enforcement. The generate response cache is running; speech audio is not cached.
 
 Verdict: **Decision (Option B) still valid.** No change to the decision; diagrams added below for each option.
 

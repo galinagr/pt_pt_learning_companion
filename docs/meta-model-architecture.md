@@ -2,7 +2,7 @@
 
 This document defines the initial architecture for integrating Meta models in PT-PT Learning Companion with a strong cost/quality balance.
 
-> **PoC status:** This describes the target architecture. The current build is a Proof of Concept. Implemented: the routing *plan* (`/api/model-plan`), routed *execution* (`/api/generate`: Spark default, Wonder escalation, Spark Open fallback), and managed transcription (`/api/transcribe`). Still pending: caching, metrics, budget enforcement, and client audio capture. See [Before production](../README.md#before-production).
+> **PoC status:** This describes the target architecture. The current build is a Proof of Concept. Implemented: the routing *plan* (`/api/model-plan`), routed *execution* (`/api/generate`: Spark default, Wonder escalation, Spark Open fallback), the in-memory generate cache, and managed transcription (`/api/transcribe`). Still pending: metrics and budget enforcement. See [Where the cache runs](#where-the-cache-runs) and [Before production](../README.md#before-production).
 
 ## Reference documentation
 
@@ -74,7 +74,7 @@ Official Meta documentation for the API and the models used here:
 - **Per-request budget cap:** hard token/cost ceiling by feature.
 - **Daily project budget:** total managed API spend cap.
 - **Escalation budget:** separate quota for Wonder to prevent accidental overuse.
-- **Caching:** prompt+inputs hash cache for idempotent requests.
+- **Caching:** running for identical `/api/generate` requests. Details are in [Where the cache runs](#where-the-cache-runs). Speech audio is not cached.
 - **Telemetry:** latency, token usage, cache hit rate, escalation rate, fallback rate.
 
 Recommended defaults:
@@ -121,6 +121,16 @@ flowchart TD
   Image --> Metrics
   SAM --> Metrics
 ```
+
+## Where the cache runs
+
+Two caches exist. They do not share entries.
+
+**Server, `response_cache.py`.** `POST /api/generate` hashes the request and looks it up before `RoutedTextService` runs. A hit returns the stored response with `cached: true` and does not call the model. The `usage` numbers on that hit are the token counts from the original call. A miss runs the model, then stores the response when `route.cache_recommended` is true. That flag is true for `translate`, `explore`, and `situation`. Failed calls are not stored.
+
+The key is a SHA-256 of the task, the stripped text, `quality`, `budget_mode`, `require_managed`, and the task system prompt. Capacity is 256 responses, least-recently used past that. The store is process memory with a thread lock. It is dropped on restart. Nothing is written to disk. `/api/speak` and `/api/transcribe` do not use this cache. Watch a Demo does not call `/api/generate`.
+
+**Page, `liveCache` in `preview/index.html`.** The browser keeps the parsed answer for the current page load. The key is the action, direction, Explore length, the typed text, and the current topic or question. A repeat on that page skips the network. A reload clears it. After a reload, the server cache can still answer the same generate request.
 
 ## Environment and model configuration
 

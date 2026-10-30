@@ -27,7 +27,7 @@ Local FastAPI app and one HTML page for European Portuguese: Translate, Explore,
 
 ## 🏗️ Architecture
 
-Two decisions are written down as ADRs. Option B is the chosen design in both. The diagrams below are those decisions. The code today runs a thinner path: the page sends `quality=standard`, so text uses Muse Spark only; Wonder does not escalate because the live client reports confidence `1.0`; Glimmer, Muse Image, and SAM are named and not called. Say sends the clip to Muse Voice Transcribe. Dictate stays on the Web Speech API. Watch a Demo never calls the model.
+Two decisions are written down as ADRs. Option B is the chosen design in both. The diagrams below are those decisions. The code today runs a thinner path: the page sends `quality=standard`, so text uses Muse Spark only; Wonder does not escalate because the live client reports confidence `1.0`; Glimmer, Muse Image, and SAM are named and not called. Say sends the clip to Muse Voice Transcribe. Dictate stays on the Web Speech API. Watch a Demo never calls the model. The response cache in the diagram is running: an identical `/api/generate` request in the same process is returned from memory and the model is not called again. How that key is built, and the separate page cache, is in [Where the cache runs](docs/meta-model-architecture.md#where-the-cache-runs).
 
 | Document | What it decides |
 | --- | --- |
@@ -174,7 +174,7 @@ curl -s localhost:8000/api/generate -H 'content-type: application/json' \
 
 `python scripts/smoke_option_b.py` runs the same routed path from the shell.
 
-Token counts come back on `GenerateResponse.usage` (`prompt_tokens`, `completion_tokens`, `total_tokens`). The generate cache stays in memory. Nothing is written to disk.
+Token counts come back on `GenerateResponse.usage` (`prompt_tokens`, `completion_tokens`, `total_tokens`). A cache hit still returns those counts from the first call, with `cached: true`. The generate cache stays in memory. Nothing is written to disk. Play and Say are not cached.
 
 ## 🖥️ Page
 
