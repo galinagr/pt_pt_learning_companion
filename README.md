@@ -1,4 +1,4 @@
-# PT-PT Learning Companion
+# 🇵🇹 PT-PT Learning Companion
 
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
@@ -11,7 +11,7 @@
 
 Local FastAPI app and one HTML page for European Portuguese: Translate, Explore, and Talk. Proof of concept. No auth, no CI, no persisted metrics.
 
-## Tools
+## 🛠️ Tools
 
 | Tool | Where it is used |
 | --- | --- |
@@ -25,7 +25,7 @@ Local FastAPI app and one HTML page for European Portuguese: Translate, Explore,
 | Meta Model API | Live text when `MODEL_API_KEY` is set. Default model `muse-spark-1.3`. |
 | pytest | `tests/`. |
 
-## Architecture
+## 🏗️ Architecture
 
 Two decisions are written down as ADRs. Option B is the chosen design in both. The diagrams below are those decisions. The code today runs a thinner path: the page sends `quality=standard`, so text uses Muse Spark only; Wonder does not escalate because the live client reports confidence `1.0`; Glimmer, Muse Image, and SAM are named and not called. Dictation in the browser uses the Web Speech API. Watch a Demo never calls the model.
 
@@ -37,7 +37,7 @@ Two decisions are written down as ADRs. Option B is the chosen design in both. T
 | [AI design](docs/ai-design.md) | When each model is meant to run. Marked as target design, not the running code. |
 | [Model overview](docs/meta-model-overview.md) | Per-model notes for this product. |
 
-### Text routing, Option B
+### 🔀 Text routing, Option B
 
 Full write-up: [ADR 0001, Option B](docs/adr/0001-ai-model-routing-strategy.md#system-design-option-b--chosen).
 
@@ -60,7 +60,7 @@ flowchart TD
   SparkOpen --> Metrics
 ```
 
-### Speech, Option B
+### 🎙️ Speech, Option B
 
 Full write-up: [ADR 0002, Option B](docs/adr/0002-speech-stack-strategy.md#system-design-option-b--chosen).
 
@@ -84,7 +84,7 @@ The page is [`preview/index.html`](preview/index.html). The Python package is `s
 
 It opens with a short floating intro, then three actions. **Watch a Demo** walks through those same screens with scripted sentences and does not call the model. A real session calls `/api/generate` for the text and `/api/speak` for Play.
 
-## What you can do
+## ✨ What you can do
 
 **Translate.** English and European Portuguese, either way. Type or dictate, then Start. The answer is a bilingual table. Play reads the Portuguese line. Say repeats it for practice. Switching direction clears the text and the previous translation.
 
@@ -94,7 +94,13 @@ It opens with a short floating intro, then three actions. **Watch a Demo** walks
 
 Previous answers stay on screen while the next one is processing. Copy, save as text or Word, send, or open WhatsApp from the result.
 
-## Screens
+## 🎬 A piece of the demo
+
+This clip is only the opening of Watch a Demo: the prompt, the typed sentence, and the bilingual lines. The rest of the demo continues through direction switching, Explore, and Talk. Stop demo is visible only while that walkthrough is running.
+
+![Demo opening: Translate types a sentence and shows the bilingual result](docs/images/demo-translate.gif)
+
+## 📸 Screens
 
 Home, with Translate, Explore, and Talk:
 
@@ -112,13 +118,7 @@ Talk, from a few keywords:
 
 ![Talk, keywords doctor, appointment, payment](docs/images/talk.png)
 
-## A piece of the demo
-
-This clip is only the opening of Watch a Demo: the prompt, the typed sentence, and the bilingual lines. The rest of the demo continues through direction switching, Explore, and Talk. Stop demo is visible only while that walkthrough is running.
-
-![Demo opening: Translate types a sentence and shows the bilingual result](docs/images/demo-translate.gif)
-
-## Run
+## 🚀 Run
 
 ```bash
 python3.12 -m venv .venv
@@ -134,7 +134,7 @@ Open http://127.0.0.1:8000. `app.py` calls `load_dotenv()` on startup, so a loca
 pytest
 ```
 
-## Python layout
+## 🐍 Python layout
 
 | Module | What it does |
 | --- | --- |
@@ -151,7 +151,7 @@ What the router actually calls today: the page sends `quality=standard`, so `/ap
 
 A corporate TLS proxy re-signs `api.meta.ai`. `tls_verify()` keeps verification on and uses `MODEL_CA_BUNDLE` or `.certs/trust-bundle.pem` when that file exists.
 
-## HTTP API
+## 🔌 HTTP API
 
 | Method | Path | Handler |
 | --- | --- | --- |
@@ -175,11 +175,11 @@ curl -s localhost:8000/api/generate -H 'content-type: application/json' \
 
 Token counts come back on `GenerateResponse.usage` (`prompt_tokens`, `completion_tokens`, `total_tokens`). Nothing is written to disk.
 
-## Page
+## 🖥️ Page
 
 `preview/index.html` is plain HTML, CSS, and JavaScript. It calls `/api/generate` for Translate, Explore, and Talk, and `/api/speak` for Play. Watch a Demo stays on scripted sentences and does not call the model. The floating intro plays when the app opens, not inside the demo.
 
-## Agent skills
+## 📘 Agent skills
 
 `skills/` is plain markdown. Any editor or model can read it. Nothing in that folder is tied to one IDE.
 
@@ -188,7 +188,7 @@ Token counts come back on `GenerateResponse.usage` (`prompt_tokens`, `completion
 | [Model transport safety](skills/model-transport-safety/model-transport-safety.md) | Changing model calls, speech, `.env`, TLS, CORS, or downloads. |
 | [Module boundaries](skills/module-boundaries/module-boundaries.md) | Adding a route, client, prompt, or moving a module. Then update the Python layout table above. |
 
-## Before production
+## 🗺️ Before production
 
 Tests beyond the current pytest modules, structured logs, metrics, auth, a lockfile, and CI. Caching, budget enforcement, and a real confidence signal are in the architecture above and are not running yet.
 
