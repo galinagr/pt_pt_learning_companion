@@ -1,0 +1,3523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PT-PT Learning Companion</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --paper: light-dark(#f5f5f7, #000);
+      --ink: light-dark(#1d1d1f, #f5f5f7);
+      --muted: light-dark(#6e6e73, #a1a1a6);
+      --card: light-dark(#fff, #1d1d1f);
+      --line: light-dark(rgb(0 0 0 / 8%), rgb(255 255 255 / 14%));
+      --en: light-dark(#0f6e56, #9ed9c4);
+      --en-wash: light-dark(#e5f6ef, #16332b);
+      --en-ink: light-dark(#0c3d32, #d4f3e6);
+      --pt: light-dark(#1d4e89, #8eb7e8);
+      --pt-fill: #1d4e89;
+      --pt-wash: light-dark(#e8f1fb, #1a2c40);
+      --pt-ink: light-dark(#14365f, #d6e7fa);
+      --note: light-dark(#f8f1dc, #3a3018);
+      --note-ink: light-dark(#6b4e16, #f3e2b8);
+      --warn: light-dark(#fdecec, #3a2222);
+      --warn-ink: light-dark(#8d2f2f, #f6c9c9);
+      --warn-line: light-dark(#e7c1c1, #6a3a3a);
+      --call: light-dark(#ffedd5, #4a2e12);
+      --call-ink: light-dark(#7a3410, #ffe0c2);
+      --call-line: light-dark(#f5a04a, #c47a32);
+      --shadow: light-dark(0 8px 28px rgb(0 0 0 / 6%), 0 8px 28px rgb(0 0 0 / 36%));
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 17px/1.47 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    body.theme-dark { color-scheme: dark; }
+    body.theme-light { color-scheme: light; }
+
+    .theme-toggle {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 60;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--card) 88%, transparent);
+      color: var(--ink);
+      font: 600 13px/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.01em;
+      padding: 8px 12px;
+      backdrop-filter: blur(6px);
+      text-transform: uppercase;
+    }
+
+    .theme-toggle:hover {
+      border-color: var(--pt-fill);
+    }
+
+    .theme-toggle .opt {
+      opacity: 0.58;
+      transition: opacity 160ms ease;
+    }
+
+    .theme-toggle .sep {
+      opacity: 0.4;
+      margin: 0 6px;
+    }
+
+    .theme-toggle[data-theme="dark"] .opt-dark,
+    .theme-toggle[data-theme="light"] .opt-light {
+      opacity: 1;
+    }
+
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 26px 26px 34px;
+    }
+
+    body.demo-contained .page {
+      max-width: 840px;
+      margin: 0 auto 0 clamp(16px, 6vw, 88px);
+      padding: 64px 22px 80px;
+    }
+
+    #home, #work {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--pt);
+      font: 600 12px/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 14ch;
+      font-size: 48px;
+      font-weight: 600;
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+    }
+
+    .home-head { display: block; }
+
+    #home .home-title {
+      max-width: 12ch;
+      font-size: 56px;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      text-wrap: balance;
+      color: transparent;
+      background: linear-gradient(112deg, var(--ink) 0%, var(--ink) 56%, var(--pt-fill) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    #home .home-title::after {
+      content: "";
+      display: block;
+      width: 3.6ch;
+      height: 5px;
+      margin-top: 14px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--pt-fill), var(--en));
+    }
+
+    .lede, .hint {
+      margin: 12px 0 0;
+      max-width: 36ch;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.4;
+    }
+
+    .welcome {
+      margin-top: 22px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .welcome h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .steps {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .steps li {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .step-no {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--pt-wash);
+      color: var(--pt-ink);
+      font: 600 13px/28px ui-sans-serif, system-ui, sans-serif;
+      text-align: center;
+    }
+
+    .steps h3 {
+      margin: 2px 0 0;
+      font: 600 16px/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .steps p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font: 15px/1.45 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .step-lines {
+      list-style: none;
+      margin: 8px 0 0;
+      padding: 0;
+      display: grid;
+      gap: 6px;
+    }
+
+    .step-lines li {
+      display: block;
+      margin: 0;
+      color: var(--ink);
+      font: 15px/1.45 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .step-lines strong {
+      display: inline;
+      margin-right: 6px;
+      border-radius: 999px;
+      padding: 1px 8px;
+      font-weight: 600;
+    }
+
+    .hint {
+      font: 14px/1.4 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .panel, .sheet {
+      background: var(--card);
+      border: 0;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel { margin-top: 18px; padding: 22px; }
+
+    .choices, .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .choices { margin-bottom: 14px; }
+
+    button, .file {
+      border: 1px solid transparent;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--ink);
+      font: 14px/1.2 ui-sans-serif, system-ui, sans-serif;
+      padding: 8px 14px;
+      cursor: pointer;
+    }
+
+    button:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 2px solid var(--pt-fill);
+      outline-offset: 2px;
+    }
+
+    .choices button[aria-pressed="true"] {
+      background: var(--pt-fill);
+      color: #f4fbf8;
+    }
+
+    .choices.action-tiles {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 36px 0 0;
+    }
+
+    .action-tiles button {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+      min-height: 0;
+      padding: 0 0 18px;
+      overflow: hidden;
+      border-radius: 22px;
+      border: 1px solid transparent;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      color: var(--ink);
+      font: 14px/1.2 ui-sans-serif, system-ui, sans-serif;
+      text-align: left;
+      white-space: normal;
+    }
+
+    .action-tiles button[aria-pressed="true"] {
+      background: var(--card);
+      border-color: var(--pt-fill);
+      color: var(--ink);
+      box-shadow: 0 10px 28px rgb(29 78 137 / 16%);
+    }
+
+    .action-tiles button.demo-focus {
+      border-color: var(--pt-fill);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--pt-fill) 40%, transparent), 0 10px 28px rgb(29 78 137 / 16%);
+    }
+
+    button.demo-focus,
+    input.demo-focus,
+    textarea.demo-focus {
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--pt-fill) 35%, transparent);
+    }
+
+    .action-tiles button.demo-tap {
+      animation: demo-tap 560ms cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .tile-name {
+      margin: 14px 18px 0;
+      font: 600 22px/1.15 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: -0.03em;
+    }
+
+    .tile-note {
+      margin: 6px 18px 0;
+      color: var(--muted);
+      font: 14px/1.35 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .demo-actions {
+      position: fixed;
+      top: 62px;
+      right: 14px;
+      z-index: 69;
+      margin-top: 0;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .demo-link {
+      margin-top: 0;
+      padding: 8px 14px;
+      border: 1px solid color-mix(in srgb, var(--pt-fill) 34%, var(--line));
+      border-radius: 999px;
+      color: var(--pt-fill);
+      font: 600 14px/1.2 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: 0.01em;
+      background: color-mix(in srgb, var(--card) 90%, transparent);
+    }
+
+    .demo-link:hover {
+      border-color: var(--pt-fill);
+      background: color-mix(in srgb, var(--pt-fill) 14%, var(--card));
+    }
+
+    body.theme-dark .demo-link {
+      border-color: color-mix(in srgb, #8eb7e8 56%, var(--line));
+      color: #d6e7fa;
+      background: color-mix(in srgb, #8eb7e8 18%, var(--card));
+    }
+
+    body.theme-dark .demo-link:hover {
+      border-color: #9fc3ee;
+      background: color-mix(in srgb, #8eb7e8 30%, var(--card));
+      color: #eef5ff;
+    }
+
+    .demo-stop {
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 70;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: light-dark(#fff, #1b1916);
+      color: var(--ink);
+      font: 600 15px/1.2 ui-sans-serif, system-ui, sans-serif;
+      padding: 9px 14px;
+    }
+
+    .demo-stop.active {
+      border-color: var(--warn-line);
+      background: var(--warn);
+      color: var(--warn-ink);
+    }
+
+    .app-intro {
+      position: fixed;
+      inset: 0;
+      z-index: 65;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(24px, 9vw, 120px);
+      background:
+        radial-gradient(1200px 620px at 50% 38%, color-mix(in srgb, var(--pt-wash) 55%, var(--paper)) 0%, var(--paper) 72%);
+      text-align: center;
+    }
+
+    .app-intro-text {
+      margin: 0;
+      max-width: 20ch;
+      font-size: clamp(30px, 6vw, 62px);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.08;
+      color: var(--ink);
+      text-wrap: balance;
+    }
+
+    .app-intro-line {
+      display: block;
+      opacity: 0;
+    }
+
+    .app-intro-line.float-in {
+      animation: intro-float 2200ms ease-out both;
+    }
+
+    .app-intro-line + .app-intro-line {
+      margin-top: 0.12em;
+    }
+
+    .app-intro-text .em {
+      color: transparent;
+      background: linear-gradient(112deg, var(--pt), var(--en));
+      -webkit-background-clip: text;
+      background-clip: text;
+    }
+
+    .demo-subtitle {
+      position: fixed;
+      left: 18px;
+      top: 18px;
+      z-index: 50;
+      margin: 0;
+      max-width: min(30ch, calc(100vw - 36px));
+      border-radius: 14px;
+      background: color-mix(in srgb, var(--call) 86%, transparent);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--call-line);
+      color: var(--call-ink);
+      padding: 10px 12px;
+      font: 600 20px/1.24 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: -0.01em;
+      text-wrap: balance;
+    }
+
+    .demo-subtitle.finish {
+      animation: demo-finish 680ms cubic-bezier(.16, .84, .32, 1) both;
+    }
+
+    .demo-subtitle::after {
+      content: "";
+      position: absolute;
+      height: 2px;
+      width: 54px;
+      background: linear-gradient(90deg, color-mix(in srgb, var(--call-line) 74%, transparent), color-mix(in srgb, var(--call-line) 98%, transparent));
+      top: var(--arrow-y, 14px);
+      border-radius: 99px;
+    }
+
+    .demo-subtitle.arrow-down::after {
+      left: 18px;
+      top: calc(100% + 7px);
+      width: 2px;
+      height: 36px;
+    }
+
+    .demo-subtitle.arrow-up::after {
+      left: 18px;
+      top: -43px;
+      width: 2px;
+      height: 36px;
+    }
+
+    .demo-subtitle.arrow-right::after {
+      left: calc(100% + 10px);
+    }
+
+    .demo-subtitle.arrow-left::after {
+      right: calc(100% + 10px);
+      left: auto;
+      transform: rotate(180deg);
+    }
+
+    .demo-subtitle::before {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--call-line) 96%, transparent);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--card) 92%, transparent);
+    }
+
+    .demo-subtitle.arrow-right::before {
+      left: calc(100% + 62px);
+      top: calc(var(--arrow-y, 14px) - 4px);
+    }
+
+    .demo-subtitle.arrow-left::before {
+      right: calc(100% + 62px);
+      top: calc(var(--arrow-y, 14px) - 4px);
+    }
+
+    .demo-subtitle.arrow-up::before {
+      left: 14px;
+      top: -49px;
+    }
+
+    .demo-subtitle.arrow-down::before {
+      left: 14px;
+      top: calc(100% + 39px);
+    }
+
+    .scene, .scene-stage {
+      width: 100%;
+      background: light-dark(#eef3f8, #2c2c2e);
+    }
+
+    .scene { height: 220px; position: relative; overflow: hidden; }
+    .scene-stage > .scene { height: 100%; }
+
+    .scene-stage {
+      height: 280px;
+      margin: 0 0 18px;
+      border-radius: 22px;
+      overflow: hidden;
+    }
+
+    .look { display: block; height: 100%; }
+
+    .look video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .editorial-video {
+      background: light-dark(#dbe5ef, #1f2328);
+    }
+
+
+    .back {
+      margin: 0 0 18px;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--pt-fill);
+      font: 600 34px/1.1 ui-sans-serif, system-ui, sans-serif;
+      letter-spacing: -0.03em;
+    }
+
+    #work h1 { max-width: none; font-size: 40px; }
+
+    .field { margin-top: 12px; }
+
+    label.block {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font: 14px/1.4 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    textarea, select, input[type="text"] {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: light-dark(#fff, #1b1916);
+      color: var(--ink);
+      font: 17px/1.45 ui-sans-serif, system-ui, sans-serif;
+      padding: 12px;
+    }
+
+    textarea { min-height: 96px; resize: vertical; }
+
+    select {
+      width: auto;
+      font: 14px/1.2 ui-sans-serif, system-ui, sans-serif;
+      padding: 8px 12px;
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 8px;
+      color: var(--muted);
+      font: 13px/1.4 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .over { color: var(--warn-ink); }
+
+    .panel > .primary { margin-top: 14px; }
+
+    .primary {
+      background: var(--pt-fill);
+      color: #f5f5f7;
+      border-radius: 980px;
+      padding: 12px 22px;
+      font: 600 17px/1.2 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .primary:disabled { opacity: 0.55; cursor: wait; }
+
+    .processing {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0;
+      padding: 20px 16px 24px;
+      color: var(--pt-ink);
+      font: 16px/1.4 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--pt-wash);
+      border-top-color: var(--pt-fill);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    td.speaking { box-shadow: inset 0 0 0 2px var(--pt-fill); }
+
+    @media (prefers-reduced-motion: no-preference) {
+      html.motion-action .panel { view-transition-name: companion-panel; }
+      html.motion-action .sheet { view-transition-name: companion-sheet; }
+
+      ::view-transition-old(companion-panel),
+      ::view-transition-old(companion-sheet) {
+        animation: fade-away 180ms ease both;
+      }
+
+      ::view-transition-new(companion-panel),
+      ::view-transition-new(companion-sheet) {
+        animation: rise-in 220ms cubic-bezier(.2, .8, .2, 1) both;
+      }
+
+      .choices button, .topics button, .speed button, .primary {
+        transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease, transform 180ms ease;
+      }
+
+      .topics button:hover, .choices button:hover { border-color: var(--pt); }
+      .topics button:active { transform: translateY(1px); }
+
+      .arrive-row, .arrive-more { animation: rise-in 240ms cubic-bezier(.2, .8, .2, 1) both; }
+      .arrive-answer { animation: slide-in 240ms cubic-bezier(.2, .8, .2, 1) both; }
+      td.speaking { transition: box-shadow 200ms ease; }
+      #home.home-enter .eyebrow,
+      #home.home-enter h1 {
+        animation: intro-in 1.15s cubic-bezier(.16, .84, .32, 1) both;
+      }
+
+      #home.home-enter .lede {
+        animation: intro-in 1.05s cubic-bezier(.16, .84, .32, 1) .45s both;
+      }
+
+      #home.home-enter .action-tiles button:nth-child(1) {
+        animation: intro-in 1s cubic-bezier(.16, .84, .32, 1) 1.15s both;
+      }
+
+      #home.home-enter .action-tiles button:nth-child(2) {
+        animation: intro-in 1s cubic-bezier(.16, .84, .32, 1) 1.7s both;
+      }
+
+      #home.home-enter .action-tiles button:nth-child(3) {
+        animation: intro-in 1s cubic-bezier(.16, .84, .32, 1) 2.25s both;
+      }
+
+      #home.home-enter .demo-actions {
+        animation: intro-in 1s cubic-bezier(.16, .84, .32, 1) 2.8s both;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .spinner, .arrive-row, .arrive-answer, .arrive-more { animation: none; }
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes intro-float {
+      from { opacity: 0.08; filter: blur(7px); }
+      to { opacity: 1; filter: blur(0); }
+    }
+
+    @keyframes intro-in {
+      from { opacity: 0; transform: translateX(-72px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes home-bar {
+      from { transform: translateX(0); opacity: 0.75; }
+      to { transform: translateX(20px); opacity: 1; }
+    }
+
+    @keyframes demo-tap {
+      0% { transform: scale(1); }
+      45% { transform: scale(0.985); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes demo-finish {
+      from { transform: translateY(12px); opacity: 0; }
+      to { transform: none; opacity: 1; }
+    }
+
+    @keyframes fade-away {
+      to { opacity: 0; }
+    }
+
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateX(14px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .sheet { margin-top: 16px; overflow: hidden; }
+
+    .sheet-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      padding: 16px 16px 0;
+    }
+
+    .sheet-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 12px;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .speed { display: flex; gap: 6px; }
+
+    .speed button[aria-pressed="true"] {
+      background: var(--pt-fill);
+      border-color: var(--pt-fill);
+      color: #f4fbf8;
+    }
+
+    .sheet-body { display: flex; flex-direction: column; }
+
+    .sheet-body.for-explore #situation-side { display: none; }
+    .sheet-body.for-situation #explore-answers,
+    .sheet-body.for-situation #explore-split { display: none; }
+
+    .sheet-body.for-explore #view-table { order: 1; }
+    .sheet-body.for-explore #view-maps { order: 2; }
+    .sheet-body.for-explore #explore-split { order: 3; }
+    .sheet-body.for-explore #view-warning { order: 4; }
+
+    .sheet-body.for-explore.with-answers {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(14rem, 0.72fr);
+      gap: 8px 16px;
+      align-items: start;
+    }
+
+    .sheet-body.for-explore.with-answers #view-table { grid-column: 1; grid-row: 1; }
+    .sheet-body.for-explore.with-answers #view-maps { grid-column: 1; grid-row: 2; }
+    .sheet-body.for-explore.with-answers #explore-answers { grid-column: 1; grid-row: 3; }
+    .sheet-body.for-explore.with-answers #explore-split {
+      grid-column: 2;
+      grid-row: 1 / span 3;
+      align-self: start;
+    }
+    .sheet-body.for-explore.with-answers #view-warning { grid-column: 1 / -1; }
+
+    .explore-split { display: flex; flex-direction: column; min-width: 0; }
+    .explore-answers { min-width: 0; }
+    .explore-split .topics { padding: 8px 8px 0; }
+    .explore-split .section-label { padding: 8px 8px 0; }
+    .explore-split .ask { padding: 8px 8px 0; }
+
+    @media (max-width: 720px) {
+      .sheet-body.for-explore.with-answers { grid-template-columns: 1fr; }
+      .sheet-body.for-explore.with-answers #view-table,
+      .sheet-body.for-explore.with-answers #view-maps,
+      .sheet-body.for-explore.with-answers #explore-answers,
+      .sheet-body.for-explore.with-answers #explore-split { grid-column: 1; }
+      .sheet-body.for-explore.with-answers #view-table { grid-row: 1; }
+      .sheet-body.for-explore.with-answers #explore-split { grid-row: 2; }
+      .sheet-body.for-explore.with-answers #explore-answers { grid-row: 3; }
+      .sheet-body.for-explore.with-answers #view-maps { grid-row: 4; }
+    }
+
+    .follow-empty {
+      margin: 0;
+      padding: 12px 16px;
+      color: var(--muted);
+      font: 15px/1.45 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .sheet-body.for-situation.with-answers {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(14rem, 0.72fr);
+      gap: 8px 16px;
+      align-items: start;
+    }
+
+    .situation-side { display: flex; flex-direction: column; align-items: stretch; min-width: 0; }
+    .situation-side #view-topics { padding-bottom: 0; }
+    .situation-side .ask { padding-top: 0; }
+
+    .sheet-body.for-situation.with-answers #view-table { grid-column: 1; grid-row: 1; }
+    .sheet-body.for-situation.with-answers #situation-side { grid-column: 2; grid-row: 1; align-self: start; }
+    .sheet-body.for-situation.with-answers #view-warning { grid-column: 1 / -1; }
+
+    @media (max-width: 720px) {
+      .sheet-body.for-situation.with-answers { grid-template-columns: 1fr; }
+      .sheet-body.for-situation.with-answers #view-table,
+      .sheet-body.for-situation.with-answers #situation-side { grid-column: 1; }
+      .sheet-body.for-situation.with-answers #view-table { grid-row: 1; }
+      .sheet-body.for-situation.with-answers #situation-side { grid-row: 2; }
+    }
+
+    .section-label {
+      margin: 0;
+      padding: 4px 16px 0;
+      font: 600 15px/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .maps { margin: 0; padding: 4px 16px 0; }
+
+    .maps a {
+      color: var(--pt-ink);
+      font: 600 14px/1.4 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .ask {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 0 16px 8px;
+    }
+
+    .ask input[type="text"] { flex: 1; width: auto; }
+
+    .ask button {
+      border: 1px solid var(--pt);
+      background: var(--card);
+      color: var(--pt-ink);
+    }
+
+    .topics {
+      display: grid;
+      gap: 8px;
+      padding: 16px;
+    }
+
+    .topics button,
+    .speed button {
+      border: 1px solid var(--line);
+      background: light-dark(#fff, #1b1916);
+      text-align: left;
+    }
+
+    .topics button {
+      width: 100%;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font: 15px/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .topics button[aria-pressed="true"] {
+      background: var(--pt-fill);
+      border-color: var(--pt-fill);
+      color: #f4fbf8;
+    }
+
+    h2 { margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.03em; }
+
+    .sample {
+      margin: 0;
+      color: var(--muted);
+      font: 13px/1.4 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .verb-note { padding: 4px 16px 0; }
+
+    .reading {
+      margin: 16px;
+      padding: 16px;
+      border-radius: 12px;
+    }
+
+    .reading p { margin: 8px 0 0; font-size: 20px; line-height: 1.45; }
+
+    .chip {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font: 600 12px/1.4 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .en { background: var(--en-wash); color: var(--en-ink); }
+    .pt { background: var(--pt-wash); color: var(--pt-ink); }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .label-row label.block { margin-bottom: 0; }
+
+    .spoken {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      width: 100%;
+    }
+
+    .words { flex: 1 1 12rem; }
+
+    .word {
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .sound, .mic {
+      border: 1px solid var(--pt);
+      background: var(--card);
+      color: var(--pt-ink);
+      flex: 0 0 auto;
+    }
+
+    .heard {
+      display: block;
+      width: 100%;
+      margin-top: 6px;
+      color: var(--muted);
+      font: 13px/1.4 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .pair p {
+      margin: 0;
+      padding: 10px 16px;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .pair + .pair { border-top: 1px solid var(--line); }
+
+    strong { font-weight: 700; }
+
+    .verb-banner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      align-items: baseline;
+      padding: 8px 16px 0;
+    }
+
+    .verb-banner p { margin: 0; }
+
+    .infinitive { font-size: 28px; }
+
+    .tense {
+      margin: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .tense h3 {
+      margin: 0;
+      padding: 8px 12px;
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      font: 600 14px/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .tense th, .tense td { padding: 8px 12px; font-size: 16px; width: auto; }
+
+    .tense .form { font-size: 18px; }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    caption {
+      caption-side: bottom;
+      padding: 8px 16px 12px;
+      text-align: left;
+      color: var(--muted);
+      font: 13px/1.4 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      vertical-align: top;
+      text-align: left;
+      width: 50%;
+    }
+
+    th {
+      font: 600 13px/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    td { font-size: 16px; line-height: 1.42; }
+    .sheet td { font-size: 15px; line-height: 1.4; }
+
+    tr + tr td { border-top: 1px solid var(--line); }
+
+    .notes, .warning {
+      margin: 0 16px 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+    }
+
+    .notes { background: var(--note); color: var(--note-ink); }
+    .warning {
+      background: var(--warn);
+      color: var(--warn-ink);
+      border: 1px solid var(--warn-line);
+    }
+
+    .notes h3, .warning h3 {
+      margin: 0 0 6px;
+      font: 600 13px/1.3 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .notes p, .warning p { margin: 0; }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      padding: 0 16px 16px;
+    }
+
+    .actions button, .actions select {
+      border-color: var(--line);
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .status {
+      min-height: 1.4em;
+      margin: 0;
+      padding: 0 16px 16px;
+      color: var(--pt-ink);
+      font: 14px/1.4 ui-sans-serif, system-ui, sans-serif;
+    }
+
+    .save-dialog {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--card);
+      color: var(--ink);
+      padding: 20px;
+      width: min(440px, calc(100vw - 32px));
+    }
+
+    .save-dialog::backdrop { background: rgb(28 25 21 / 40%); }
+
+    .save-dialog h2 { margin: 0 0 12px; font-size: 22px; }
+
+    .save-path-row, .save-dialog-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .save-path-row { margin-top: 6px; }
+
+    .save-path-row input { flex: 1 1 180px; width: auto; min-width: 0; }
+
+    .save-dialog-actions { margin-top: 16px; justify-content: flex-end; }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 720px) {
+      h1 { font-size: 36px; }
+      #home .home-title { font-size: 42px; }
+      .theme-toggle { top: 10px; left: 10px; }
+      .demo-subtitle { top: 12px; font-size: 17px; line-height: 1.24; }
+      .demo-stop { top: 10px; right: 10px; }
+      .demo-actions { top: 50px; right: 10px; }
+      .demo-link { font-size: 15px; }
+      .page { margin: 0 auto; padding-top: 48px; }
+      .choices.action-tiles, .action-tiles { grid-template-columns: 1fr; }
+      .action-tiles button { min-height: 0; }
+      th, td { padding: 10px 8px; }
+      td { font-size: 16px; }
+    }
+  </style>
+</head>
+<body class="theme-dark">
+  <button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="true" data-theme="dark">
+    <span class="opt opt-dark">DARK</span><span class="sep">/</span><span class="opt opt-light">LIGHT</span>
+  </button>
+  <dialog class="save-dialog" id="save-dialog">
+    <h2>Save on this PC</h2>
+    <label class="block" for="save-chosen">Path</label>
+    <div class="save-path-row">
+      <input id="save-chosen" type="text" placeholder="Choose where to save the file" autocomplete="off">
+      <button type="button" id="save-choose">Choose</button>
+    </div>
+    <div class="save-dialog-actions">
+      <button type="button" id="save-cancel">Cancel</button>
+      <button type="button" class="primary" id="save-confirm">Save</button>
+    </div>
+  </dialog>
+  <main class="page">
+    <section id="home" class="home-enter">
+      <p class="eyebrow">European Portuguese</p>
+      <div class="home-head">
+        <h1 class="home-title">Say it like a local.</h1>
+      </div>
+      <p class="lede">Get ready for real conversations and prepare what to say next.</p>
+      <div class="choices action-tiles" role="group" aria-label="Action">
+        <button type="button" id="act-translate" aria-pressed="false">
+          <span class="scene" aria-hidden="true">
+            <span class="look editorial"><video class="editorial-video" data-editorial-slot="2" autoplay muted loop playsinline preload="metadata" poster="/static/scenes/editorial-talk.png"></video></span>
+          </span>
+          <span class="tile-name">Translate</span>
+          <span class="tile-note">English and Portuguese, either way.</span>
+        </button>
+        <button type="button" id="act-explore" aria-pressed="false">
+          <span class="scene" aria-hidden="true">
+            <span class="look editorial"><video class="editorial-video" data-editorial-slot="1" autoplay muted loop playsinline preload="metadata" poster="/static/scenes/editorial-street.png"></video></span>
+          </span>
+          <span class="tile-name">Explore</span>
+          <span class="tile-note">A short guide, then your questions.</span>
+        </button>
+        <button type="button" id="act-situation" aria-pressed="false">
+          <span class="scene" aria-hidden="true">
+            <span class="look editorial"><video class="editorial-video" data-editorial-slot="0" autoplay muted loop playsinline preload="metadata" poster="/static/scenes/editorial-cafe.png"></video></span>
+          </span>
+          <span class="tile-name">Talk</span>
+          <span class="tile-note">A dialog from a few keywords.</span>
+        </button>
+      </div>
+      <div class="demo-actions">
+        <button type="button" id="watch-demo" class="demo-link">Watch a Demo.</button>
+      </div>
+    </section>
+
+    <div id="work" hidden>
+    <button type="button" id="back-home" class="back">Actions</button>
+    <h1 id="work-title">Translate</h1>
+    <div id="scene-stage" class="scene-stage" aria-hidden="true"></div>
+    <section class="panel" aria-label="Action">
+
+      <div class="field" id="direction-field">
+        <span class="block" id="direction-label">Direction</span>
+        <div class="choices" role="group" aria-labelledby="direction-label">
+          <button type="button" id="dir-en-pt" aria-pressed="true">English to European Portuguese</button>
+          <button type="button" id="dir-pt-en" aria-pressed="false">European Portuguese to English</button>
+        </div>
+      </div>
+
+      <div class="field" id="subject-field" hidden>
+        <div class="label-row">
+          <label class="block" for="subject">What to explore</label>
+          <button type="button" class="mic" id="dictate-subject">Dictate</button>
+        </div>
+        <input id="subject" type="text" maxlength="200" placeholder="Add or dictate a place request (e.g., a restaurant in Porto)" autocomplete="off">
+        <p class="hint">A restaurant, a named place, or a street. For example, a restaurant, the Eiffel Tower, or Market Street in San Francisco.</p>
+      </div>
+
+      <div class="field" id="explore-length-field" hidden>
+        <span class="block" id="explore-length-label">Answer length</span>
+        <div id="explore-length" class="choices" role="group" aria-labelledby="explore-length-label">
+          <button type="button" id="explore-short" aria-pressed="true">Short</button>
+          <button type="button" id="explore-long" aria-pressed="false">Long</button>
+        </div>
+        <p id="explore-model-note" class="hint">Short, under 500 characters.</p>
+      </div>
+
+      <div class="field" id="keywords-field" hidden>
+        <div class="label-row">
+          <label class="block" for="keywords">Keywords</label>
+          <button type="button" class="mic" id="dictate-keywords">Dictate</button>
+        </div>
+        <input id="keywords" type="text" maxlength="200" placeholder="Add or dictate keywords (e.g., doctor, appointment, payment)" autocomplete="off">
+      </div>
+
+      <div class="field" id="text-field">
+        <div class="label-row">
+          <label class="block" for="source">Text</label>
+          <button type="button" class="mic" id="dictate-source">Dictate</button>
+        </div>
+        <textarea id="source" placeholder="Add or dictate a text (e.g., The train to Porto leaves from platform nine.)"></textarea>
+      </div>
+
+      <div class="meta">
+        <span id="count">0 / 6,000</span>
+        <span id="limit-msg" class="over" hidden>Shorten the text to 6,000 characters, then try again.</span>
+      </div>
+      <button type="button" class="primary" id="start">Start</button>
+    </section>
+
+    <section class="sheet" id="result-sheet" aria-live="polite">
+      <div class="sheet-head" id="sheet-head">
+        <h2 id="sheet-title">Translation</h2>
+        <div class="sheet-tools">
+          <div class="speed" role="group" aria-label="Playback speed">
+            <button type="button" id="speed-1" aria-pressed="true">1×</button>
+            <button type="button" id="speed-half" aria-pressed="false">0.5×</button>
+          </div>
+          <p class="sample" id="sheet-note">Press Start.</p>
+        </div>
+      </div>
+      <p class="processing" id="processing" hidden>
+        <span class="spinner" aria-hidden="true"></span>
+        Processing…
+      </p>
+
+      <div id="sheet-body" class="sheet-body">
+      <div id="view-table" class="pairs"></div>
+      <p id="view-maps" class="maps" hidden><a id="maps-link" target="_blank" rel="noopener noreferrer">Open in Google Maps</a></p>
+      <div id="explore-answers" class="explore-answers" hidden>
+        <p id="follow-empty" class="follow-empty" hidden>Choose a question.</p>
+        <h3 id="follow-title" class="section-label" hidden></h3>
+        <div id="view-follow" class="pairs" hidden></div>
+      </div>
+      <div id="situation-side" class="situation-side">
+        <div id="view-topics" class="topics" role="group" aria-label="Topics" hidden></div>
+        <div id="situation-extra-field" hidden>
+          <div class="ask">
+            <input id="situation-entry" type="text" maxlength="200" placeholder="Ask your question" aria-label="Ask your question" autocomplete="off">
+            <button type="button" id="situation-entry-send">Ask</button>
+          </div>
+        </div>
+      </div>
+      <div id="explore-split" class="explore-split" hidden>
+        <div class="explore-questions">
+          <h3 id="explore-prompt" class="section-label" hidden>Would you like to know</h3>
+          <div id="explore-topics" class="topics" role="group" aria-label="Questions" hidden></div>
+          <h3 id="more-prompt" class="section-label" hidden>You can also ask</h3>
+          <div id="view-more" class="topics" role="group" aria-label="More questions" hidden></div>
+          <div id="view-ask" class="ask" hidden>
+            <input id="explore-question" type="text" maxlength="200" placeholder="Add your own question (e.g., What should I say when paying?)" aria-label="Your question" autocomplete="off">
+            <button type="button" id="explore-ask">Ask</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="view-warning" class="warning" hidden>
+        <h3 id="warning-title">This text is not Portuguese</h3>
+        <p id="warning-body">Paste or type European Portuguese, then check it again. Corrections stay hidden until the text is Portuguese.</p>
+      </div>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="copy">Copy</button>
+        <label class="block" for="format" style="margin:0">Format</label>
+        <select id="format" aria-label="Save format">
+          <option value="txt">Plain text .txt</option>
+          <option value="docx">Word .docx</option>
+        </select>
+        <button type="button" id="save">Save on this PC</button>
+        <button type="button" id="send">Send</button>
+        <button type="button" id="whatsapp">WhatsApp</button>
+      </div>
+      <p class="status" id="status" role="status"></p>
+    </section>
+    </div>
+  </main>
+  <button type="button" id="stop-demo" class="demo-stop" hidden>Stop demo</button>
+  <p id="demo-subtitle" class="demo-subtitle" hidden>Open Translate.</p>
+  <div id="app-intro" class="app-intro" hidden>
+    <p id="app-intro-text" class="app-intro-text"></p>
+  </div>
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const THEME_KEY = "ptpt-theme";
+    const state = { screen: "home", action: "translate", direction: "en-pt", topic: "", pick: "", more: "", question: "", situationQuestion: "", ready: false, running: false, rate: 1, demoOpen: false, exploreLength: "short" };
+    const EXPLORE_MAX_CHARS = { short: 500, long: 1000 };
+    let demoTimer = 0;
+    let demoToken = 0;
+    const DEMO_PACE = 1.3;
+    let revealInFlight = Promise.resolve();
+    let runTimer = 0;
+    let liveResult = null;
+    let liveToken = 0;
+    let liveCache = {};
+
+    function applyTheme(theme) {
+      const next = theme === "light" ? "light" : "dark";
+      document.body.classList.remove("theme-dark", "theme-light");
+      document.body.classList.add("theme-" + next);
+      $("theme-toggle").setAttribute("aria-pressed", next === "dark" ? "true" : "false");
+      $("theme-toggle").setAttribute("data-theme", next);
+      $("theme-toggle").setAttribute("aria-label", "Theme: " + (next === "dark" ? "DARK" : "LIGHT"));
+      try {
+        localStorage.setItem(THEME_KEY, next);
+      } catch (err) {}
+    }
+    const translatePairs = [
+      ["The train to Porto leaves from platform nine.", "O comboio para o Porto parte da plataforma nove."],
+      ["Don't forget the ticket.", "Não te esqueças do bilhete."]
+    ];
+    const restaurantOptions = [
+      {
+        id: "say",
+        label: "What to say",
+        lines: [
+          ["A table for two, please.", "Uma mesa para dois, se faz favor."],
+          ["What do you recommend?", "O que recomenda?"],
+          ["I don't eat meat.", "Não como carne."]
+        ],
+        more: [
+          { id: "allergies", label: "Allergies", lines: [["I am allergic to nuts.", "Sou alérgico a frutos secos."], ["Does this have gluten?", "Isto tem glúten?"]] },
+          { id: "water", label: "Water and coffee", lines: [["A bottle of water, please.", "Uma garrafa de água, se faz favor."], ["Is tap water free?", "A água da torneira é grátis?"]] },
+          { id: "linger", label: "If you want to linger", lines: [["We are not in a hurry.", "Não temos pressa."], ["May we stay a little longer?", "Podemos ficar mais um pouco?"]] }
+        ]
+      },
+      {
+        id: "pay",
+        label: "How to pay",
+        lines: [
+          ["The bill, please.", "A conta, se faz favor."],
+          ["Do you take a card?", "Aceitam cartão?"],
+          ["Is the service included?", "O serviço está incluído?"]
+        ],
+        more: [
+          { id: "card", label: "Card or cash", lines: [["Card, please.", "Com cartão, se faz favor."], ["Cash, please.", "Em dinheiro, se faz favor."]] },
+          { id: "split", label: "Splitting the bill", lines: [["Can we split the bill?", "Podemos dividir a conta?"], ["Separate bills, please.", "Contas separadas, se faz favor."]] }
+        ]
+      },
+      {
+        id: "book",
+        label: "Reservations",
+        lines: [
+          ["I have a reservation.", "Tenho uma reserva."],
+          ["A table for two at eight, please.", "Uma mesa para dois às oito, se faz favor."],
+          ["How long is the wait?", "Quanto tempo é a espera?"]
+        ],
+        more: [
+          { id: "name", label: "The name on the booking", lines: [["The reservation is in the name of Ana.", "A reserva está em nome de Ana."]] },
+          { id: "late", label: "Running late", lines: [["We are ten minutes late.", "Estamos atrasados dez minutos."]] }
+        ]
+      },
+      {
+        id: "menu",
+        label: "The menu",
+        lines: [
+          ["What is today's special?", "Qual é o prato do dia?"],
+          ["Is this dish spicy?", "Este prato é picante?"],
+          ["We would like to share this.", "Queremos partilhar isto."]
+        ],
+        more: [
+          { id: "special", label: "The dish of the day", lines: [["Is the special still available?", "Ainda há prato do dia?"]] },
+          { id: "share", label: "Sharing", lines: [["One plate for two, please.", "Um prato para dois, se faz favor."]] }
+        ]
+      }
+    ];
+    const eiffelOptions = [
+      {
+        id: "history",
+        label: "History",
+        lines: [
+          ["Gustave Eiffel's company built it for the 1889 World's Fair.", "A empresa de Gustave Eiffel construiu-a para a Exposição Universal de 1889."],
+          ["It was meant to stand for twenty years.", "Devia ficar apenas vinte anos."],
+          ["It stayed because it became useful for radio.", "Ficou porque passou a servir para a rádio."]
+        ],
+        more: [
+          { id: "kept", label: "Why it was kept", lines: [["Radio antennas on the top gave the tower a job after the fair.", "As antenas de rádio no topo deram-lhe uma função depois da exposição."]] },
+          { id: "name", label: "The name", lines: [["It took the name of the engineer who led the firm.", "Ficou com o nome do engenheiro que dirigia a empresa."]] },
+          { id: "opposed", label: "Who opposed it", lines: [["Many writers and artists asked for it to be taken down.", "Muitos escritores e artistas pediram que a demolissem."]] }
+        ]
+      },
+      {
+        id: "construction",
+        label: "Construction",
+        lines: [
+          ["It is wrought iron, standing on four legs.", "É de ferro forjado e assenta em quatro pilares."],
+          ["The pieces were made off site and riveted in place.", "As peças foram feitas fora do local e rebitadas no sítio."],
+          ["The work took a little over two years.", "A obra durou pouco mais de dois anos."]
+        ],
+        more: [
+          { id: "iron", label: "The iron", lines: [["About 7,300 tonnes of iron went into the tower.", "Entraram na torre cerca de 7 300 toneladas de ferro."]] },
+          { id: "lifts", label: "The lifts", lines: [["Lifts carry visitors up the legs. The stairs are still there.", "Elevadores sobem pelos pilares. As escadas continuam lá."]] },
+          { id: "duration", label: "How long it took", lines: [["Work began in 1887 and finished in time for the fair in 1889.", "A obra começou em 1887 e ficou pronta para a exposição de 1889."]] }
+        ]
+      },
+      {
+        id: "biography",
+        label: "Biography of the creator",
+        lines: [
+          ["Gustave Eiffel was a French engineer, born in 1832.", "Gustave Eiffel foi um engenheiro francês, nascido em 1832."],
+          ["His firm designed bridges before the tower.", "A empresa dele projetou pontes antes da torre."],
+          ["He also worked on the iron frame inside the Statue of Liberty.", "Também trabalhou na estrutura de ferro no interior da Estátua da Liberdade."]
+        ],
+        more: [
+          { id: "gustave", label: "Gustave Eiffel", lines: [["He led the company. Maurice Koechlin and Émile Nouguier drew the tower.", "Ele dirigia a empresa. Maurice Koechlin e Émile Nouguier desenharam a torre."]] },
+          { id: "other", label: "Other work", lines: [["Stephen Sauvestre shaped the arches and the look of the base.", "Stephen Sauvestre desenhou os arcos e o aspeto da base."]] }
+        ]
+      },
+      {
+        id: "events",
+        label: "Coming events",
+        lines: [
+          ["Exhibitions and seasonal visits change through the year.", "As exposições e as visitas da época mudam ao longo do ano."],
+          ["At night the lights sparkle for a few minutes each hour.", "De noite as luzes cintilam durante uns minutos em cada hora."],
+          ["Check what is on for the day you go.", "Confirme o que há no dia em que for."]
+        ],
+        more: [
+          { id: "night", label: "At night", lines: [["The sparkle runs a few minutes at the start of each hour after dark.", "O cintilar dura uns minutos no início de cada hora, depois de escurecer."]] },
+          { id: "tickets", label: "Tickets", lines: [["Buy a timed ticket. Stairs and lifts are different tickets.", "Compre um bilhete com hora. Escadas e elevadores são bilhetes diferentes."]] }
+        ]
+      }
+    ];
+    const streetOptions = [
+      {
+        id: "rush",
+        label: "Rush hours",
+        lines: [
+          ["Weekday mornings are heavy toward downtown.", "Nas manhãs de dia útil há muito trânsito em direção ao centro."],
+          ["Evenings are heavy heading away from downtown.", "Ao fim da tarde há muito trânsito a sair do centro."],
+          ["A bus or a train is often faster than a car then.", "Um autocarro ou um comboio costuma ser mais rápido do que o carro nessas horas."]
+        ],
+        more: [
+          { id: "morning", label: "Morning", lines: [["From about seven to nine, the street fills toward the Financial District.", "Por volta das sete às nove, a rua enche em direção ao Financial District."]] },
+          { id: "evening", label: "Evening", lines: [["From about four to seven, traffic heads west and out of downtown.", "Por volta das quatro às sete, o trânsito segue para oeste e sai do centro."]] },
+          { id: "foot", label: "On foot", lines: [["Walking a few blocks can be quicker than a car at those hours.", "Andar uns quarteirões a pé pode ser mais rápido do que ir de carro nessas horas."]] }
+        ]
+      },
+      {
+        id: "history",
+        label: "History",
+        lines: [
+          ["Market Street was laid out as San Francisco's wide main street.", "Market Street foi traçada como a rua larga principal de São Francisco."],
+          ["It was rebuilt after the 1906 earthquake and fire.", "Foi reconstruída depois do terramoto e do incêndio de 1906."],
+          ["Streetcars, and later BART and Muni, run along it.", "Elétricos e, mais tarde, o BART e o Muni, circulam ao longo dela."]
+        ],
+        more: [
+          { id: "quake", label: "After 1906", lines: [["The fire that followed the earthquake cleared much of the street. The city rebuilt it wider in use, with transit in the middle.", "O incêndio que se seguiu ao terramoto levou grande parte da rua. A cidade reconstruiu-a com os transportes no meio."]] },
+          { id: "named", label: "The name", lines: [["It was named Market Street as the city's main market thoroughfare.", "Chama-se Market Street por ser a grande artéria comercial da cidade."]] }
+        ]
+      },
+      {
+        id: "district",
+        label: "The district",
+        lines: [
+          ["The east end meets the Embarcadero and the Financial District.", "A ponta leste encontra o Embarcadero e o Financial District."],
+          ["The middle stretch passes Civic Center and Mid-Market.", "O troço do meio passa pelo Civic Center e por Mid-Market."],
+          ["Further along it climbs toward the Castro.", "Mais à frente sobe em direção ao Castro."]
+        ],
+        more: [
+          { id: "financial", label: "Financial District", lines: [["Offices and the waterfront sit at the eastern end.", "Os escritórios e a zona ribeirinha ficam na ponta leste."]] },
+          { id: "mid", label: "Mid-Market", lines: [["Mid-Market is the stretch around Civic Center.", "Mid-Market é o troço à volta do Civic Center."]] },
+          { id: "castro", label: "Toward the Castro", lines: [["The western end rises into the neighborhoods past Van Ness.", "A ponta oeste sobe para os bairros depois de Van Ness."]] }
+        ]
+      },
+      {
+        id: "transit",
+        label: "Getting there",
+        lines: [
+          ["BART and Muni Metro stop along Market Street.", "O BART e o Muni Metro param ao longo de Market Street."],
+          ["Which stop is closest?", "Qual é a paragem mais próxima?"],
+          ["The map shows the block you asked about.", "O mapa mostra o quarteirão de que falou."]
+        ],
+        more: [
+          { id: "bart", label: "BART and Muni", lines: [["Underground stations sit under Market. Look for the stairs with the transit mark.", "As estações subterrâneas ficam debaixo de Market. Procure as escadas com o sinal dos transportes."]] },
+          { id: "stop", label: "The closest stop", lines: [["Which stop is closest to this address?", "Qual é a paragem mais próxima desta morada?"]] }
+        ]
+      }
+    ];
+    const situationTopics = [
+      { id: "visit", label: "Plan a visit to a dermatologist" },
+      { id: "clinic", label: "Find a clinic" },
+      { id: "consult", label: "At the consultation" },
+      { id: "payment", label: "Payment methods" }
+    ];
+    const situationLines = {
+      visit: [
+        ["I would like to book a dermatology appointment.", "Queria marcar uma consulta de dermatologia."],
+        ["I have a mole that has changed shape.", "Tenho um sinal que mudou de forma."],
+        ["It itches, and the color is darker.", "Tem comichão e a cor está mais escura."],
+        ["Do I need a referral from my family doctor?", "Preciso de referenciação do médico de família?"]
+      ],
+      clinic: [
+        ["Where can I see a dermatologist?", "Onde posso consultar um dermatologista?"],
+        ["Is there a dermatology clinic near here?", "Há uma clínica de dermatologia perto daqui?"],
+        ["Can I book for this week?", "Posso marcar para esta semana?"],
+        ["Are you taking new patients?", "Aceitam novos utentes?"]
+      ],
+      consult: [
+        ["This mole has grown over the last few months.", "Este sinal cresceu nos últimos meses."],
+        ["The edge is irregular, and the color is uneven.", "O bordo é irregular e a cor não é uniforme."],
+        ["It itches, and the skin around it is red.", "Dá comichão e a pele à volta está vermelha."],
+        ["Should it be removed, or only watched?", "Devo tirá-lo, ou basta vigiar?"]
+      ],
+      payment: [
+        ["How do I pay for this visit?", "Como pago esta consulta?"],
+        ["Do you take a card?", "Aceitam cartão?"],
+        ["Is there a user fee in the public service?", "Há taxa moderadora no serviço público?"],
+        ["May I have a receipt for my insurance?", "Pode passar-me um recibo para o seguro?"]
+      ]
+    };
+    let situationExtraTopics = [];
+    let situationTopicsOverride = null;
+
+    function buildSituationTopics(context) {
+      const terms = context
+        .split(/[,;\n]|\band\b/i)
+        .map((part) => part.trim())
+        .filter(Boolean);
+      const seen = new Set();
+      const topics = [];
+      terms.forEach((term, index) => {
+        const key = term.toLowerCase();
+        if (seen.has(key) || topics.length >= 5) return;
+        seen.add(key);
+        const label = term.charAt(0).toUpperCase() + term.slice(1);
+        topics.push({
+          id: "ctx-" + index,
+          label,
+          lines: [
+            ["Let's focus on " + term + ".", "Vamos focar-nos em " + term + "."],
+            ["Say it in one clear sentence first.", "Diga primeiro numa frase clara."],
+            ["Then ask a follow-up to keep the dialog going.", "Depois faça uma pergunta para manter o diálogo."]
+          ]
+        });
+      });
+      topics.push({
+        id: "ctx-wrap",
+        label: "Put it all together",
+        lines: [
+          ["Let's combine everything into a short dialog.", "Vamos combinar tudo num diálogo curto."],
+          ["Open politely, then make your request.", "Comece com cortesia e depois faça o pedido."],
+          ["Close by confirming the next step.", "Termine confirmando o próximo passo."]
+        ]
+      });
+      return topics;
+    }
+
+    let activeRecognition = null;
+    let currentAudio = null;
+    let motionKind = "";
+    let shownScreen = "";
+    let speakingCell = null;
+    let speechMark = 0;
+
+    function markSpeaking(cell) {
+      if (speakingCell) speakingCell.classList.remove("speaking");
+      speakingCell = cell || null;
+      if (speakingCell) speakingCell.classList.add("speaking");
+    }
+
+    function stopAudio() {
+      speechMark += 1;
+      markSpeaking(null);
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+      }
+      if (window.speechSynthesis) window.speechSynthesis.cancel();
+      if (!activeRecognition) return;
+      const rec = activeRecognition;
+      activeRecognition = null;
+      rec.onresult = null;
+      rec.onerror = null;
+      rec.onend = null;
+      try { rec.abort(); } catch (err) { /* The recognizer had already stopped. */ }
+    }
+
+    function speakEndpoint() {
+      if (location.protocol === "file:") return "http://127.0.0.1:8000/api/speak";
+      return "/api/speak";
+    }
+
+    async function speakPortuguese(text) {
+      const phrase = text.trim();
+      if (!phrase) return;
+      const mark = ++speechMark;
+      if (activeRecognition) {
+        const rec = activeRecognition;
+        activeRecognition = null;
+        rec.onresult = null;
+        rec.onerror = null;
+        rec.onend = null;
+        try { rec.abort(); } catch (err) { /* The recognizer had already stopped. */ }
+      }
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+      }
+      $("status").textContent = "European Portuguese…";
+      try {
+        const response = await fetch(speakEndpoint(), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: phrase, rate: state.rate === 0.5 ? 0.5 : 1 })
+        });
+        if (!response.ok) throw new Error("speech failed");
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        currentAudio = audio;
+        audio.addEventListener("ended", () => {
+          URL.revokeObjectURL(url);
+          if (mark === speechMark) markSpeaking(null);
+        }, { once: true });
+        await audio.play();
+        $("status").textContent = "European Portuguese";
+      } catch (err) {
+        if (mark === speechMark) markSpeaking(null);
+        $("status").textContent = "European Portuguese speech did not start. Open this page from the local server.";
+      }
+    }
+
+    function spokenToken(token) {
+      return token.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
+    }
+
+    function speechWords(text) {
+      return text.normalize("NFC").toLowerCase().replace(/[^\p{L}\p{N}\s]+/gu, " ").trim().split(/\s+/).filter(Boolean);
+    }
+
+    function sameWords(left, right) {
+      const a = speechWords(left);
+      const b = speechWords(right);
+      return a.length === b.length && a.every((word, index) => word === b[index]);
+    }
+
+    function heardPhrase(event) {
+      let phrase = "";
+      for (let i = 0; i < event.results.length; i += 1) {
+        const chunk = event.results[i][0] && event.results[i][0].transcript;
+        if (chunk) phrase += chunk;
+      }
+      return phrase.replace(/\s+/g, " ").trim();
+    }
+
+    function listen(lang, onPhrase, keepGoing) {
+      const Ctor = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!Ctor) {
+        $("status").textContent = "This browser has no voice tools.";
+        return;
+      }
+      stopAudio();
+      const rec = new Ctor();
+      activeRecognition = rec;
+      rec.lang = lang;
+      rec.continuous = !!keepGoing;
+      rec.interimResults = !!keepGoing;
+      rec.maxAlternatives = 1;
+      let silenceTimer = 0;
+      rec.onresult = (event) => {
+        const phrase = heardPhrase(event);
+        if (!phrase) {
+          $("status").textContent = "No speech was heard. Try again.";
+          return;
+        }
+        onPhrase(phrase);
+        if (!keepGoing) return;
+        window.clearTimeout(silenceTimer);
+        silenceTimer = window.setTimeout(() => {
+          try { rec.stop(); } catch (err) { /* already stopped */ }
+        }, 1400);
+      };
+      rec.onerror = (event) => {
+        window.clearTimeout(silenceTimer);
+        if (event.error === "no-speech") $("status").textContent = "No speech was heard. Try again.";
+        else if (event.error === "not-allowed" || event.error === "service-not-allowed") {
+          $("status").textContent = "The microphone is blocked. Allow it in the browser, then try again.";
+        }
+      };
+      rec.onend = () => {
+        window.clearTimeout(silenceTimer);
+        if (activeRecognition === rec) activeRecognition = null;
+      };
+      try { rec.start(); } catch (err) {
+        $("status").textContent = "No speech was heard. Try again.";
+      }
+    }
+
+    function playButton(text) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "sound";
+      button.textContent = "Play";
+      button.setAttribute("aria-label", "Play this Portuguese");
+      button.addEventListener("click", () => {
+        markSpeaking(button.closest("td"));
+        speakPortuguese(text);
+      });
+      return button;
+    }
+
+    function practiceButton(text, heard) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "mic";
+      button.textContent = "Say";
+      button.setAttribute("aria-label", "Say this Portuguese");
+      button.addEventListener("click", () => {
+        listen("pt-PT", (phrase) => {
+          heard.hidden = false;
+          heard.textContent = sameWords(text, phrase)
+            ? "Heard: " + phrase + " Matched."
+            : "Heard: " + phrase + " Not the same words.";
+        });
+      });
+      return button;
+    }
+
+    function appendWrapped(source, target) {
+      Array.from(source.childNodes).forEach((node) => {
+        if (node.nodeType === 3) {
+          node.textContent.split(/(\s+)/).forEach((part) => {
+            if (!part) return;
+            if (/^\s+$/.test(part)) target.append(part);
+            else {
+              const button = document.createElement("button");
+              button.type = "button";
+              button.className = "word";
+              button.textContent = part;
+              const spoken = spokenToken(part);
+              button.addEventListener("click", () => {
+                if (!spoken) return;
+                markSpeaking(button.closest("td"));
+                speakPortuguese(spoken);
+              });
+              target.append(button);
+            }
+          });
+        } else if (node.nodeType === 1 && node.tagName !== "BUTTON") {
+          const wrap = document.createElement(node.tagName === "STRONG" || node.tagName === "B" ? "strong" : "span");
+          appendWrapped(node, wrap);
+          target.append(wrap);
+        }
+      });
+    }
+
+    function renderSpoken(el) {
+      if (!el.dataset.speechHtml) el.dataset.speechHtml = el.innerHTML;
+      const source = document.createElement("div");
+      source.innerHTML = el.dataset.speechHtml;
+      const text = source.textContent;
+      const spoken = document.createElement("span");
+      spoken.className = "spoken";
+      const words = document.createElement("span");
+      words.className = "words";
+      appendWrapped(source, words);
+      const heard = document.createElement("span");
+      heard.className = "heard";
+      heard.hidden = true;
+      spoken.append(words, playButton(text), practiceButton(text, heard));
+      el.replaceChildren(spoken, heard);
+    }
+
+    function sentencesOf(text) {
+      return text.split(/(?<=[.!?])\s+/).filter(Boolean);
+    }
+
+    function addLine(parent, lang, text) {
+      const line = document.createElement("p");
+      line.className = lang;
+      line.textContent = text;
+      if (lang === "pt") renderSpoken(line);
+      parent.append(line);
+    }
+
+    function fillPairs(container, pairs, sourceLang, arrive) {
+      const leftIsEn = sourceLang === "en";
+      container.replaceChildren();
+      const table = document.createElement("table");
+      const headRow = document.createElement("tr");
+      const leftHead = document.createElement("th");
+      const rightHead = document.createElement("th");
+      leftHead.textContent = leftIsEn ? "English" : "European Portuguese";
+      rightHead.textContent = leftIsEn ? "European Portuguese" : "English";
+      leftHead.className = leftIsEn ? "en" : "pt";
+      rightHead.className = leftIsEn ? "pt" : "en";
+      headRow.append(leftHead, rightHead);
+      const thead = document.createElement("thead");
+      thead.append(headRow);
+      const tbody = document.createElement("tbody");
+      pairs.forEach((pair, index) => {
+        const row = document.createElement("tr");
+        if (arrive) {
+          row.classList.add("arrive-row");
+          row.style.animationDelay = (index * 40) + "ms";
+        }
+        const left = document.createElement("td");
+        const right = document.createElement("td");
+        left.textContent = leftIsEn ? pair[0] : pair[1];
+        right.textContent = leftIsEn ? pair[1] : pair[0];
+        left.className = leftIsEn ? "en" : "pt";
+        right.className = leftIsEn ? "pt" : "en";
+        if (left.className === "pt") renderSpoken(left);
+        if (right.className === "pt") renderSpoken(right);
+        row.append(left, right);
+        tbody.append(row);
+      });
+      table.append(thead, tbody);
+      container.append(table);
+    }
+
+    function clampText(text, maxChars) {
+      if (!maxChars || text.length <= maxChars) return text;
+      const clipped = text.slice(0, Math.max(0, maxChars - 1)).trimEnd();
+      return clipped + "…";
+    }
+
+    function mergePairsToSingleBlock(pairs, maxChars = 0) {
+      if (!pairs || !pairs.length) return [];
+      const en = clampText(pairs.map((pair) => pair[0]).join(" "), maxChars);
+      const pt = clampText(pairs.map((pair) => pair[1]).join(" "), maxChars);
+      return [[en, pt]];
+    }
+
+    function linesOf(pairs, sourceLang) {
+      const leftIsEn = sourceLang === "en";
+      const header = (leftIsEn ? "English" : "European Portuguese") + "\t" + (leftIsEn ? "European Portuguese" : "English");
+      const rows = pairs.map((pair) => {
+        const left = leftIsEn ? pair[0] : pair[1];
+        const right = leftIsEn ? pair[1] : pair[0];
+        return left + "\t" + right;
+      });
+      return [header, ...rows].join("\n");
+    }
+
+    function press(id, on) {
+      $(id).setAttribute("aria-pressed", on ? "true" : "false");
+    }
+
+    function limit() {
+      if (state.action === "explore") return 200;
+      if (state.action === "situation") return 200;
+      return 6000;
+    }
+
+    function activeText() {
+      if (state.action === "explore") return $("subject").value;
+      if (state.action === "situation") return $("keywords").value;
+      return $("source").value;
+    }
+
+    function showWarning(title, body) {
+      $("warning-title").textContent = title;
+      $("warning-body").textContent = body;
+      $("view-warning").hidden = false;
+    }
+
+    function barePlace(subject) {
+      return subject.toLowerCase()
+        .replace(/\b(a|an|the|restaurant|restaurante|cafe|café)\b/g, " ")
+        .replace(/[^a-z0-9]+/g, " ")
+        .trim();
+    }
+
+    function exploreModel(subject) {
+      const name = subject.trim();
+      const low = name.toLowerCase();
+      if (/\b(restaurant|restaurante|cafe|café|tasca|cervejaria|bistro|diner)\b/.test(low)) {
+        const named = barePlace(name).length > 0;
+        const brief = named
+          ? [
+              [name + " is a restaurant.", name + " é um restaurante."],
+              ["Check the address and today's hours on the map before you go.", "Confirme a morada e o horário de hoje no mapa antes de ir."],
+              ["You wait to be seated, or you ask if a table is free.", "Espera que o sentem, ou pergunta se há uma mesa livre."],
+              ["Lunch is often the main meal. People linger.", "O almoço é muitas vezes a refeição principal. As pessoas demoram-se."],
+              ["A table for two, please.", "Uma mesa para dois, se faz favor."],
+              ["The bill, please.", "A conta, se faz favor."]
+            ]
+          : [
+              ["A restaurant is where you sit down for a meal.", "Um restaurante é onde se senta para uma refeição."],
+              ["You wait to be seated, or you ask if a table is free.", "Espera que o sentem, ou pergunta se há uma mesa livre."],
+              ["Lunch is often the main meal. People linger.", "O almoço é muitas vezes a refeição principal. As pessoas demoram-se."],
+              ["Bread and olives can arrive before you order.", "O pão e as azeitonas podem chegar antes de pedir."],
+              ["Tap water is not always free. Ask.", "A água da torneira nem sempre é grátis. Pergunte."],
+              ["A table for two, please.", "Uma mesa para dois, se faz favor."],
+              ["What do you recommend?", "O que recomenda?"],
+              ["The bill, please.", "A conta, se faz favor."]
+            ];
+        return { brief, query: named ? name : "", options: restaurantOptions };
+      }
+      if (/eiffel/.test(low)) {
+        return {
+          brief: [
+            ["The Eiffel Tower is a wrought-iron tower in Paris, built for the 1889 World's Fair.", "A Torre Eiffel é uma torre de ferro forjado em Paris, construída para a Exposição Universal de 1889."],
+            ["Address: Champ de Mars, 5 Avenue Anatole France, 75007 Paris.", "Morada: Champ de Mars, 5 Avenue Anatole France, 75007 Paris."],
+            ["It is open every day. Hours change with the season, so check the day you go.", "Está aberta todos os dias. O horário muda com a estação, por isso confirme no dia em que for."]
+          ],
+          query: "Eiffel Tower, Paris",
+          options: eiffelOptions
+        };
+      }
+      if (/\b(street|avenue|road|boulevard|rua|travessa)\b/.test(low) || /\bmarket street\b/.test(low)) {
+        const market = /market street/.test(low);
+        if (market) {
+          return {
+            brief: [
+              ["Market Street is the main downtown street in San Francisco.", "Market Street é a rua principal do centro de São Francisco."],
+              ["It runs from the Embarcadero, through the Financial District and Mid-Market, toward the Castro.", "Vai do Embarcadero, pelo Financial District e por Mid-Market, em direção ao Castro."],
+              ["Open the map to see the exact block.", "Abra o mapa para ver o quarteirão exato."]
+            ],
+            query: name,
+            options: streetOptions
+          };
+        }
+        return {
+          brief: [
+            [name + " is the street you asked about.", name + " é a rua de que falou."],
+            ["Open the map for the block, the district, and the busy hours.", "Abra o mapa para o quarteirão, o bairro e as horas de maior movimento."]
+          ],
+          query: name,
+          options: [
+            { id: "rush", label: "Rush hours", lines: [["This street is usually busiest in commuting hours on weekdays.", "Esta rua costuma ter mais movimento nas horas de deslocação durante a semana."], ["Morning traffic is often heavier than late evening traffic.", "O trânsito da manhã é muitas vezes mais intenso do que o do fim da tarde."]], more: [{ id: "morning", label: "Morning", lines: [["Morning rush commonly starts around local work-start time.", "O pico da manhã começa normalmente perto da hora de entrada no trabalho."]] }, { id: "evening", label: "Evening", lines: [["Evening traffic usually eases after the main return-home period.", "O movimento da tarde costuma acalmar depois do principal período de regresso a casa."]] }] },
+            { id: "history", label: "History", lines: [["This street developed with the growth of the surrounding district and local commerce.", "Esta rua desenvolveu-se com o crescimento do bairro e do comércio local."]], more: [{ id: "name", label: "The name", lines: [["Its name usually reflects a local historical person, place, or event.", "O nome costuma refletir uma pessoa, lugar ou acontecimento histórico local."]] }] },
+            { id: "district", label: "The district", lines: [["The street belongs to the district shown on local city maps.", "A rua pertence ao bairro indicado nos mapas locais da cidade."], ["The area is typically known for nearby services and daily movement.", "A zona é normalmente conhecida pelos serviços próximos e pelo movimento diário."]], more: [{ id: "around", label: "Around it", lines: [["Nearby you can usually find transport links, shops, and local services.", "Nas redondezas encontra normalmente ligações de transporte, lojas e serviços locais."]] }] },
+            { id: "transit", label: "Getting there", lines: [["The most direct route depends on your starting point and current traffic.", "O percurso mais direto depende do seu ponto de partida e do trânsito atual."], ["The closest stop is usually the one on the same corridor or parallel avenue.", "A paragem mais próxima costuma ser a da mesma via ou de uma avenida paralela."]], more: [{ id: "stop", label: "The closest stop", lines: [["The nearest stop can be confirmed quickly on the map with the full address.", "A paragem mais próxima confirma-se rapidamente no mapa com a morada completa."]] }] }
+          ]
+        };
+      }
+      return {
+        brief: [
+          ["A guide to " + name + ".", "Um guia sobre " + name + "."],
+          ["Open the map for the address and today's hours.", "Abra o mapa para a morada e o horário de hoje."]
+        ],
+        query: name,
+        options: [
+          { id: "history", label: "History", lines: [[name + " has a local history shaped by the city and the period in which it developed.", name + " tem uma história local moldada pela cidade e pela época em que se desenvolveu."]], more: [{ id: "name", label: "The name", lines: [["Its name usually comes from a historical reference, person, or local feature.", "O nome costuma vir de uma referência histórica, pessoa ou característica local."]] }] },
+          { id: "construction", label: "Construction", lines: [["Its construction reflects the materials and engineering methods common in its period.", "A construção reflete os materiais e métodos de engenharia comuns da sua época."]], more: [{ id: "when", label: "When", lines: [["The completion date can be confirmed in local records or official sources.", "A data de conclusão pode ser confirmada em registos locais ou fontes oficiais."]] }] },
+          { id: "biography", label: "Biography of the creator", lines: [["The creator is linked to the design and technical direction of this place.", "O criador está ligado ao desenho e à direção técnica deste local."]], more: [{ id: "other", label: "Other work", lines: [["The same creator often contributed to related projects in the same era.", "O mesmo criador contribuiu muitas vezes para projetos relacionados na mesma época."]] }] },
+          { id: "events", label: "Coming events", lines: [["Current events usually depend on season, local calendar, and venue programming.", "Os eventos atuais dependem normalmente da época, do calendário local e da programação do espaço."]], more: [{ id: "hours", label: "Hours that day", lines: [["Opening hours for that day are best confirmed in official channels before visiting.", "O horário desse dia confirma-se melhor em canais oficiais antes da visita."]] }] }
+        ]
+      };
+    }
+
+    function exploreFollow(guide) {
+      if (state.question) {
+        return {
+          title: state.question,
+          lines: linesForExploreLength([
+            ["Here is a direct summary for: " + state.question, "Aqui está um resumo direto sobre: " + state.question],
+            ["You can confirm this with official local sources and maps.", "Pode confirmar isto em fontes locais oficiais e mapas."]
+          ])
+        };
+      }
+      const option = guide.options.find((item) => item.id === state.pick);
+      if (!option) return null;
+      if (state.more) {
+        const deeper = (option.more || []).find((item) => item.id === state.more);
+        if (deeper) return { title: deeper.label, lines: linesForExploreLength(deeper.lines) };
+      }
+      return { title: option.label, lines: linesForExploreLength(option.lines) };
+    }
+
+    function currentPairs() {
+      if (!state.demoOpen && liveResult && liveResult.pairs && liveResult.pairs.length) {
+        if (liveResult.followPairs && liveResult.followPairs.length) return liveResult.pairs.concat(liveResult.followPairs);
+        return liveResult.pairs;
+      }
+      if (state.action === "explore") {
+        const guide = exploreModel($("subject").value);
+        const follow = exploreFollow(guide);
+        const lines = follow ? guide.brief.concat(follow.lines) : guide.brief;
+        const maxChars = state.exploreLength === "short" ? EXPLORE_MAX_CHARS.short : EXPLORE_MAX_CHARS.long;
+        return mergePairsToSingleBlock(lines, maxChars);
+      }
+      if (state.action === "situation") return situationPairs();
+      return translatePairs;
+    }
+
+    function pairSource() {
+      return state.action === "translate" && state.direction === "pt-en" ? "pt" : "en";
+    }
+
+    function refreshCount() {
+      const value = activeText();
+      const max = limit();
+      $("count").textContent = value.length.toLocaleString("en-US") + " / " + max.toLocaleString("en-US");
+      const over = value.length > max;
+      $("limit-msg").hidden = !over;
+      $("limit-msg").textContent = "Shorten the text to " + max.toLocaleString("en-US") + " characters, then try again.";
+      $("count").classList.toggle("over", over);
+    }
+
+    function plainExport() {
+      const pairs = currentPairs();
+      if (!pairs.length) return "Choose a topic.";
+      return linesOf(pairs, pairSource());
+    }
+
+    function showOptionButtons(host, items, pressedId, onPick) {
+      host.replaceChildren();
+      items.forEach((item) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = item.label;
+        button.setAttribute("aria-pressed", pressedId === item.id ? "true" : "false");
+        button.addEventListener("click", () => onPick(item.id));
+        host.append(button);
+      });
+      host.hidden = false;
+    }
+
+    function clearTypedQuestion() {
+      state.question = "";
+      $("explore-question").value = "";
+    }
+
+    function clearSituationQuestion() {
+      state.situationQuestion = "";
+      const extra = $("situation-entry");
+      if (extra) extra.value = "";
+    }
+
+    function clearDemoFocus() {
+      document.querySelectorAll("button.demo-focus").forEach((button) => button.classList.remove("demo-focus"));
+      document.querySelectorAll("button.demo-tap").forEach((button) => button.classList.remove("demo-tap"));
+      document.querySelectorAll("input.demo-focus, textarea.demo-focus").forEach((el) => el.classList.remove("demo-focus"));
+    }
+
+    function positionDemoSubtitle(focusEl) {
+      const bubble = $("demo-subtitle");
+      bubble.classList.remove("arrow-up", "arrow-down", "arrow-left", "arrow-right");
+      const pad = 12;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const bubbleRect = bubble.getBoundingClientRect();
+      const page = document.querySelector(".page");
+      const pageRect = page ? page.getBoundingClientRect() : { left: 18, right: vw - 18, top: 18 };
+      const laneGap = 16;
+      const rightLaneLeft = pageRect.right + laneGap;
+      const leftLaneLeft = pageRect.left - bubbleRect.width - laneGap;
+      const rightLaneFits = rightLaneLeft + bubbleRect.width <= vw - pad;
+      const leftLaneFits = leftLaneLeft >= pad;
+      if (!focusEl) {
+        if (rightLaneFits) {
+          bubble.style.left = Math.round(rightLaneLeft) + "px";
+          bubble.style.right = "auto";
+          bubble.style.top = Math.round(Math.max(pad, pageRect.top)) + "px";
+          bubble.style.setProperty("--arrow-y", "14px");
+          bubble.classList.add("arrow-left");
+        } else if (leftLaneFits) {
+          bubble.style.left = Math.round(leftLaneLeft) + "px";
+          bubble.style.right = "auto";
+          bubble.style.top = Math.round(Math.max(pad, pageRect.top)) + "px";
+          bubble.style.setProperty("--arrow-y", "14px");
+          bubble.classList.add("arrow-right");
+        } else {
+          bubble.style.left = "18px";
+          bubble.style.right = "auto";
+          bubble.style.top = "18px";
+          bubble.classList.add("arrow-down");
+        }
+        return;
+      }
+      const rect = focusEl.getBoundingClientRect();
+      const targetCenter = rect.top + (rect.height / 2);
+      let left = 18;
+      let top = 18;
+      let arrow = "arrow-left";
+      if (rightLaneFits) {
+        left = rightLaneLeft;
+        top = Math.max(pad, Math.min(targetCenter - (bubbleRect.height / 2), vh - bubbleRect.height - pad));
+        arrow = "arrow-left";
+      } else if (leftLaneFits) {
+        left = leftLaneLeft;
+        top = Math.max(pad, Math.min(targetCenter - (bubbleRect.height / 2), vh - bubbleRect.height - pad));
+        arrow = "arrow-right";
+      } else {
+        left = Math.max(pad, Math.min(rect.left, vw - bubbleRect.width - pad));
+        top = rect.bottom + 14;
+        arrow = "arrow-up";
+        if (top + bubbleRect.height > vh - pad) {
+          top = Math.max(pad, rect.top - bubbleRect.height - 14);
+          arrow = "arrow-down";
+        }
+      }
+      const arrowY = Math.max(8, Math.min(targetCenter - top - 8, bubbleRect.height - 16));
+      bubble.style.left = Math.round(left) + "px";
+      bubble.style.right = "auto";
+      bubble.style.top = Math.round(top) + "px";
+      bubble.style.setProperty("--arrow-y", Math.round(arrowY) + "px");
+      bubble.classList.add(arrow);
+    }
+
+    function smoothRevealTo(target) {
+      if (!target) return;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - 18);
+      if (reduce) {
+        window.scrollTo({ top, behavior: "auto" });
+        revealInFlight = Promise.resolve();
+        return;
+      }
+      revealInFlight = new Promise((resolve) => {
+        let done = false;
+        let settleTimer = 0;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          window.removeEventListener("scroll", onScroll);
+          window.clearTimeout(settleTimer);
+          resolve();
+        };
+        const onScroll = () => {
+          window.clearTimeout(settleTimer);
+          settleTimer = window.setTimeout(finish, 160);
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.scrollTo({ top, behavior: "smooth" });
+        settleTimer = window.setTimeout(finish, 1200);
+      });
+    }
+
+    function revealResults() {
+      smoothRevealTo($("result-sheet"));
+    }
+
+    function revealWorkTop() {
+      smoothRevealTo($("work"));
+    }
+
+    function stopDemoTimer() {
+      window.clearTimeout(demoTimer);
+      demoTimer = 0;
+    }
+
+    function setDemoSubtitle(text, focusId) {
+      clearDemoFocus();
+      $("demo-subtitle").classList.remove("finish");
+      $("demo-subtitle").textContent = text;
+      $("demo-subtitle").hidden = !state.demoOpen;
+      if (!focusId) {
+        positionDemoSubtitle(null);
+        return;
+      }
+      const focusEl = $(focusId);
+      if (!focusEl) {
+        positionDemoSubtitle(null);
+        return;
+      }
+      focusEl.classList.add("demo-focus");
+      if (focusEl.tagName === "BUTTON") focusEl.classList.add("demo-tap");
+      requestAnimationFrame(() => positionDemoSubtitle(focusEl));
+    }
+
+    function focusFirstPlayButton() {
+      const playButton = document.querySelector("#view-table button.sound");
+      if (!playButton) return false;
+      clearDemoFocus();
+      playButton.classList.add("demo-focus");
+      playButton.classList.add("demo-tap");
+      requestAnimationFrame(() => positionDemoSubtitle(playButton));
+      return true;
+    }
+
+    function waitDemo(ms, token) {
+      return new Promise((resolve) => {
+        stopDemoTimer();
+        const delay = Math.max(0, Math.round(ms * DEMO_PACE));
+        demoTimer = window.setTimeout(() => resolve(state.demoOpen && demoToken === token), delay);
+      });
+    }
+
+    async function waitForReveal(token) {
+      const startedAt = Date.now();
+      while (state.demoOpen && demoToken === token && !state.ready && Date.now() - startedAt < 5000) {
+        const keepGoing = await waitDemo(80, token);
+        if (!keepGoing) return false;
+      }
+      if (!state.demoOpen || demoToken !== token) return false;
+      await revealInFlight;
+      return state.demoOpen && demoToken === token;
+    }
+
+    async function typeDemo(id, text, token) {
+      const el = $(id);
+      if (!el) return false;
+      el.classList.add("demo-focus");
+      el.value = "";
+      el.dispatchEvent(new Event("input", { bubbles: true }));
+      for (const char of text) {
+        if (!state.demoOpen || demoToken !== token) return false;
+        el.value += char;
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+        const keepGoing = await waitDemo(15, token);
+        if (!keepGoing) return false;
+      }
+      return true;
+    }
+
+    let appIntroToken = 0;
+
+    function clearAppIntro() {
+      $("app-intro-text").innerHTML = "";
+    }
+
+    function addAppIntroLine(html) {
+      const line = document.createElement("span");
+      line.className = "app-intro-line float-in";
+      line.innerHTML = html;
+      $("app-intro-text").appendChild(line);
+    }
+
+    function hideAppIntro() {
+      $("app-intro").hidden = true;
+    }
+
+    function cancelAppIntro() {
+      appIntroToken += 1;
+      hideAppIntro();
+    }
+
+    function waitMs(ms) {
+      return new Promise((resolve) => window.setTimeout(resolve, ms));
+    }
+
+    async function runAppIntro() {
+      const token = ++appIntroToken;
+      const screens = [
+        ["New country.", "New life."],
+        ["One thing stands between you and belonging", "\u2014 <span class=\"em\">the language</span>."],
+        ["Translate, explore, and talk", "your way into <span class=\"em\">Portugal</span>."]
+      ];
+      $("app-intro").hidden = false;
+      for (const lines of screens) {
+        if (token !== appIntroToken) return;
+        clearAppIntro();
+        for (let i = 0; i < lines.length; i++) {
+          if (token !== appIntroToken) return;
+          addAppIntroLine(lines[i]);
+          const last = i === lines.length - 1;
+          await waitMs(last ? 2900 : 2400);
+        }
+      }
+      await waitMs(500);
+      if (token !== appIntroToken) return;
+      hideAppIntro();
+    }
+
+    async function runDemoSequence(token) {
+      setDemoSubtitle("Click Translate.", "act-translate");
+      if (!(await waitDemo(1000, token))) return;
+      openAction("translate", true);
+      if (!(await waitDemo(850, token))) return;
+
+      setDemoSubtitle("Type or dictate English text.", "source");
+      if (!(await typeDemo("source", "The train leaves at nine.", token))) return;
+      if (!(await waitDemo(650, token))) return;
+      setDemoSubtitle("Click Start.", "start");
+      if (!(await waitDemo(650, token))) return;
+      $("start").click();
+      if (!(await waitForReveal(token))) return;
+      if (!(await waitDemo(450, token))) return;
+      setDemoSubtitle("Play sound to hear each phrase.", "");
+      focusFirstPlayButton();
+      if (!(await waitDemo(800, token))) return;
+
+      revealWorkTop();
+      if (!(await waitForReveal(token))) return;
+      setDemoSubtitle("Switching clears the text.", "dir-pt-en");
+      if (!(await waitDemo(700, token))) return;
+      $("dir-pt-en").click();
+      if (!(await waitDemo(700, token))) return;
+      setDemoSubtitle("Type or dictate Portuguese text.", "source");
+      if (!(await typeDemo("source", "O comboio parte às nove.", token))) return;
+      if (!(await waitDemo(650, token))) return;
+      setDemoSubtitle("Click Start.", "start");
+      if (!(await waitDemo(650, token))) return;
+      $("start").click();
+      if (!(await waitForReveal(token))) return;
+      if (!(await waitDemo(450, token))) return;
+
+      revealWorkTop();
+      if (!(await waitForReveal(token))) return;
+      setDemoSubtitle("Switching back clears it too.", "dir-en-pt");
+      if (!(await waitDemo(650, token))) return;
+      $("dir-en-pt").click();
+      if (!(await waitDemo(500, token))) return;
+      setDemoSubtitle("Actions returns to the start.", "back-home");
+      if (!(await waitDemo(700, token))) return;
+      goHomeFromWork();
+      if (!(await waitDemo(800, token))) return;
+
+      setDemoSubtitle("Click Explore.", "act-explore");
+      if (!(await waitDemo(1000, token))) return;
+      openAction("explore", true);
+      if (!(await waitDemo(850, token))) return;
+      setDemoSubtitle("Name a place, e.g. a restaurant.", "subject");
+      if (!(await typeDemo("subject", "a restaurant in Porto", token))) return;
+      if (!(await waitDemo(650, token))) return;
+      setDemoSubtitle("Short is the default.", "explore-short");
+      if (!(await waitDemo(700, token))) return;
+      setDemoSubtitle("Choose Long before you start.", "explore-long");
+      if (!(await waitDemo(700, token))) return;
+      $("explore-long").click();
+      if (!(await waitDemo(500, token))) return;
+      setDemoSubtitle("Click Start.", "start");
+      if (!(await waitDemo(700, token))) return;
+      $("start").click();
+      if (!(await waitForReveal(token))) return;
+      if (!(await waitDemo(450, token))) return;
+      const firstExploreTopic = document.querySelector("#explore-topics button");
+      if (!firstExploreTopic) return;
+      setDemoSubtitle("Pick a question, e.g. History.", "explore-topics");
+      if (!(await waitDemo(600, token))) return;
+      firstExploreTopic.click();
+      if (!(await waitDemo(500, token))) return;
+      const firstExploreMore = document.querySelector("#view-more button");
+      if (firstExploreMore) {
+        setDemoSubtitle("Refine with a second choice.", "view-more");
+        if (!(await waitDemo(600, token))) return;
+        firstExploreMore.click();
+        if (!(await waitDemo(500, token))) return;
+      }
+      setDemoSubtitle("Long returns one full block with its translation.", "sheet-body");
+      if (!(await waitDemo(1700, token))) return;
+      setDemoSubtitle("Play sound to hear it first.", "");
+      focusFirstPlayButton();
+      if (!(await waitDemo(800, token))) return;
+
+      revealWorkTop();
+      if (!(await waitForReveal(token))) return;
+      setDemoSubtitle("Back to Actions.", "back-home");
+      if (!(await waitDemo(700, token))) return;
+      goHomeFromWork();
+      if (!(await waitDemo(800, token))) return;
+
+      setDemoSubtitle("Click Talk.", "act-situation");
+      if (!(await waitDemo(1000, token))) return;
+      openAction("situation", true);
+      if (!(await waitDemo(850, token))) return;
+      setDemoSubtitle("Type or dictate keywords.", "keywords");
+      if (!(await typeDemo("keywords", "doctor, appointment, payment", token))) return;
+      if (!(await waitDemo(650, token))) return;
+      setDemoSubtitle("Click Start.", "start");
+      if (!(await waitDemo(700, token))) return;
+      $("start").click();
+      if (!(await waitForReveal(token))) return;
+      if (!(await waitDemo(450, token))) return;
+      setDemoSubtitle("Play sound to hear each line.", "");
+      focusFirstPlayButton();
+      if (!(await waitDemo(800, token))) return;
+      setDemoSubtitle("Choices sit beside the answers.", "view-topics");
+      if (!(await waitDemo(700, token))) return;
+      const firstSituationTopic = document.querySelector("#view-topics button");
+      if (!firstSituationTopic) return;
+      firstSituationTopic.click();
+      if (!(await waitDemo(600, token))) return;
+      setDemoSubtitle("Ask your question here.", "situation-entry");
+      if (!(await typeDemo("situation-entry", "payment and receipt", token))) return;
+      if (!(await waitDemo(650, token))) return;
+      setDemoSubtitle("Click Ask.", "situation-entry-send");
+      if (!(await waitDemo(600, token))) return;
+      $("situation-entry-send").click();
+      if (!(await waitForReveal(token))) return;
+      if (!(await waitDemo(450, token))) return;
+      setDemoSubtitle("A new question brings new choices.", "view-topics");
+      if (!(await waitDemo(1300, token))) return;
+
+      revealWorkTop();
+      if (!(await waitForReveal(token))) return;
+      setDemoSubtitle("Back to Actions.", "back-home");
+      if (!(await waitDemo(700, token))) return;
+      goHomeFromWork();
+      if (!(await waitDemo(800, token))) return;
+
+      setDemoSubtitle("Now pick what you need.", "");
+      $("demo-subtitle").classList.add("finish");
+      await waitDemo(1000, token);
+      closeDemo();
+    }
+
+    function openDemo() {
+      cancelAppIntro();
+      closeDemo();
+      demoToken += 1;
+      stopDemoTimer();
+      state.demoOpen = true;
+      document.body.classList.add("demo-contained");
+      $("stop-demo").hidden = false;
+      $("stop-demo").classList.add("active");
+      $("demo-subtitle").hidden = false;
+      runDemoSequence(demoToken);
+    }
+
+    function closeDemo() {
+      stopDemoTimer();
+      state.demoOpen = false;
+      document.body.classList.remove("demo-contained");
+      $("stop-demo").hidden = true;
+      $("stop-demo").classList.remove("active");
+      $("demo-subtitle").hidden = true;
+      clearDemoFocus();
+    }
+
+    function clearSituationEntry() {
+      const extra = $("situation-entry");
+      if (extra) extra.value = "";
+    }
+
+    function situationPairs() {
+      if (state.situationQuestion) {
+        return [
+          [state.situationQuestion, "Como posso dizer isto em português europeu?"],
+          ["Could you rephrase this for a real conversation?", "Pode reformular isto para uma conversa real?"],
+          ["Which detail should I add first?", "Que detalhe devo acrescentar primeiro?"]
+        ];
+      }
+      const pool = (situationTopicsOverride || []).concat(situationExtraTopics);
+      const custom = pool.find((item) => item.id === state.topic);
+      if (custom && custom.lines) return custom.lines;
+      if (situationLines[state.topic]) return situationLines[state.topic];
+      if (!custom) return [];
+      const keywords = $("keywords").value.trim();
+      return [
+        ["Let's add this topic: " + custom.label + ".", "Vamos acrescentar este tema: " + custom.label + "."],
+        ["Start with the key point in one sentence.", "Comece pelo ponto principal numa frase."],
+        [keywords ? "Use your keywords to keep the dialog focused." : "Add keywords to keep the dialog focused.", "Use as suas palavras-chave para manter o diálogo focado."]
+      ];
+    }
+
+    function showTopics() {
+      const items = situationTopicsOverride || situationTopics.concat(situationExtraTopics);
+      showOptionButtons($("view-topics"), items, state.topic, (id) => {
+        state.topic = id;
+        clearSituationQuestion();
+        show("answer");
+      });
+    }
+
+    function hideExploreExtras() {
+      $("view-maps").hidden = true;
+      $("explore-answers").hidden = true;
+      $("explore-split").hidden = true;
+      $("explore-prompt").hidden = true;
+      $("explore-topics").hidden = true;
+      $("view-ask").hidden = true;
+      $("follow-empty").hidden = true;
+      $("follow-title").hidden = true;
+      $("view-follow").hidden = true;
+      $("more-prompt").hidden = true;
+      $("view-more").hidden = true;
+    }
+
+    function isLikelyQuestion(text) {
+      if (text.includes("?")) return true;
+      return /^(how|what|where|when|why|can|could|should|do|does|did|is|are|will|would)\b/i.test(text.trim());
+    }
+
+    function setExploreLength(mode) {
+      const next = mode === "long" ? "long" : "short";
+      state.exploreLength = next;
+      press("explore-short", next === "short");
+      press("explore-long", next === "long");
+      $("explore-model-note").textContent = next === "short"
+        ? "Short uses the default model path (max 500 symbols)."
+        : "Long can use a higher-quality model path (max 1000 symbols).";
+    }
+
+    function linesForExploreLength(lines) {
+      if (state.exploreLength === "short") return lines.slice(0, Math.min(2, lines.length));
+      const extra = [
+        ["Here is more background so the picture is complete rather than a quick note.", "Aqui fica mais contexto para o quadro ficar completo e não apenas uma nota rápida."],
+        ["The detail below connects this to its surroundings, how it is usually used, and what a visitor tends to notice first.", "O detalhe abaixo liga isto à envolvente, à forma como é normalmente usado e ao que um visitante costuma notar primeiro."],
+        ["It also places the subject in its wider local context, so the explanation reads as a short story rather than a list of facts.", "Também coloca o tema no seu contexto local mais amplo, para que a explicação se leia como uma pequena história e não como uma lista de factos."],
+        ["For specifics such as dates, opening hours, and prices, local sources, the official site, and on-site signs are the most reliable.", "Para pormenores como datas, horários e preços, as fontes locais, o site oficial e a sinalização no local são os mais fiáveis."],
+        ["If you are learning the language, read the Portuguese block aloud and compare it with the English phrase by phrase.", "Se está a aprender a língua, leia o bloco em português em voz alta e compare-o com o inglês, frase a frase."],
+        ["Practical detail: access and schedules can change with the season, so check recent updates before you go.", "Detalhe prático: o acesso e os horários podem mudar com a estação, por isso confirme atualizações recentes antes de ir."]
+      ];
+      return lines.concat(extra);
+    }
+
+    function submitSituationEntry() {
+      const value = $("situation-entry").value.trim();
+      if (!value || !state.ready || state.action !== "situation") return;
+      $("keywords").value = value;
+      state.topic = "";
+      state.situationQuestion = "";
+      state.ready = false;
+      state.running = true;
+      situationExtraTopics = [];
+      situationTopicsOverride = buildSituationTopics(value);
+      clearSituationEntry();
+      render();
+      window.clearTimeout(runTimer);
+      if (state.demoOpen) {
+        runTimer = window.setTimeout(() => {
+          state.running = false;
+          state.ready = true;
+          show("sheet");
+          revealResults();
+        }, 900);
+        return;
+      }
+      finishWithLiveModel();
+    }
+
+    function optionFromModel(item) {
+      if (!item || !item.label) return null;
+      const label = String(item.label).trim();
+      if (!label) return null;
+      const id = String(item.id || label).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "option";
+      return { id: id, label: label, more: [] };
+    }
+
+    function readModelJson(text) {
+      const raw = String(text || "").trim().replace(/^```(?:json)?\s*/i, "").replace(/```$/, "").trim();
+      let parsed = null;
+      try { parsed = JSON.parse(raw); } catch (err) {}
+      const pairs = parsed && Array.isArray(parsed.pairs)
+        ? parsed.pairs
+          .map((item) => [String(item.en || "").trim(), String(item.pt || "").trim()])
+          .filter((pair) => pair[0] || pair[1])
+        : (raw ? [[raw, ""]] : []);
+      const options = parsed && Array.isArray(parsed.options)
+        ? parsed.options.map(optionFromModel).filter(Boolean)
+        : [];
+      const more = parsed && Array.isArray(parsed.more)
+        ? parsed.more.map(optionFromModel).filter(Boolean)
+        : [];
+      return { pairs: pairs, options: options, more: more };
+    }
+
+    function blankLive() {
+      return { pairs: [], followPairs: null, options: [], model: "", error: "", followTitle: "" };
+    }
+
+    function liveFocus() {
+      if (state.action === "explore") {
+        if (state.question) return "q:" + state.question;
+        if (state.more) return "more:" + state.pick + "/" + state.more;
+        if (state.pick) return "pick:" + state.pick;
+      } else if (state.action === "situation") {
+        if (state.situationQuestion) return "q:" + state.situationQuestion;
+        if (state.topic) return "topic:" + state.topic;
+      }
+      return "main";
+    }
+
+    function focusLabel() {
+      const options = (liveResult && liveResult.options) || [];
+      if (state.action === "explore") {
+        if (state.question) return state.question;
+        const option = options.find((item) => item.id === state.pick);
+        if (state.more && option) {
+          const deeper = (option.more || []).find((item) => item.id === state.more);
+          if (deeper) return option.label + " — " + deeper.label;
+        }
+        if (option) return option.label;
+      }
+      if (state.action === "situation") {
+        if (state.situationQuestion) return state.situationQuestion;
+        const option = options.find((item) => item.id === state.topic);
+        if (option) return option.label;
+      }
+      return "";
+    }
+
+    function liveCacheKey() {
+      return [state.action, state.direction, state.exploreLength, activeText().trim(), liveFocus()].join("\n");
+    }
+
+    function rememberLive(entry) {
+      if (!liveResult) liveResult = blankLive();
+      liveResult.model = entry.model || liveResult.model;
+      liveResult.error = "";
+      if (liveFocus() === "main") {
+        liveResult.pairs = entry.pairs;
+        if (entry.options && entry.options.length) liveResult.options = entry.options;
+        liveResult.followPairs = null;
+        liveResult.followTitle = "";
+        return;
+      }
+      liveResult.followPairs = entry.pairs;
+      liveResult.followTitle = focusLabel();
+      if (entry.more && entry.more.length && state.pick) {
+        const option = liveResult.options.find((item) => item.id === state.pick);
+        if (option) option.more = entry.more;
+      }
+    }
+
+    function livePrompt() {
+      let text = activeText().trim();
+      const focus = focusLabel();
+      if (state.action === "translate") {
+        const direction = state.direction === "pt-en" ? "Portuguese to English" : "English to Portuguese";
+        return direction + ":\n" + text;
+      }
+      if (state.action === "explore") {
+        const length = state.exploreLength === "long"
+          ? "Length: long, under 1000 characters."
+          : "Length: short, under 500 characters.";
+        text = "Place: " + text + "\n" + length;
+        if (state.more) return text + "\nDeeper choice: " + focus + "\nReturn pairs only. more must be empty.";
+        if (state.question) return text + "\nQuestion: " + focus + "\nReturn pairs only. more must be empty.";
+        if (state.pick) return text + "\nFollow-up: " + focus + "\nReturn pairs for this follow-up and 2 or 3 more choices. options must be empty.";
+        return text + "\nFirst answer. Include 4 options. more must be empty.";
+      }
+      text = "Keywords: " + text;
+      if (state.topic || state.situationQuestion) return text + "\nChosen topic: " + focus + "\nReturn pairs for this topic only. options must be empty.";
+      return text + "\nFirst answer. Include 4 next-step options.";
+    }
+
+    async function requestLiveModel() {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ task: state.action, text: livePrompt(), quality: "standard" }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        const detail = payload && payload.detail;
+        throw new Error(typeof detail === "string" ? detail : "The model request failed.");
+      }
+      const parsed = readModelJson(payload.text);
+      parsed.model = payload.route && payload.route.model_used ? payload.route.model_used : "";
+      return parsed;
+    }
+
+    function finishWithLiveModel() {
+      const token = ++liveToken;
+      const key = liveCacheKey();
+      if (liveCache[key]) {
+        rememberLive(liveCache[key]);
+        state.running = false;
+        state.ready = true;
+        show("sheet");
+        revealResults();
+        return;
+      }
+      requestLiveModel().then((result) => {
+        if (token !== liveToken || state.demoOpen) return;
+        if (!result.pairs.length) {
+          if (!liveResult) liveResult = blankLive();
+          liveResult.error = "The model returned no text.";
+        } else {
+          liveCache[key] = result;
+          rememberLive(result);
+        }
+        state.running = false;
+        state.ready = true;
+        show("sheet");
+        revealResults();
+      }).catch((err) => {
+        if (token !== liveToken || state.demoOpen) return;
+        if (!liveResult) liveResult = blankLive();
+        liveResult.error = err && err.message ? err.message : "The model request failed.";
+        state.running = false;
+        state.ready = true;
+        show("sheet");
+      });
+    }
+
+    function refreshLive() {
+      state.running = true;
+      render();
+      finishWithLiveModel();
+    }
+
+    function finishNote() {
+      if (state.action === "situation" && !state.topic && !state.situationQuestion) {
+        $("sheet-note").hidden = false;
+        $("sheet-note").textContent = "Choose a topic.";
+        return;
+      }
+      $("sheet-note").textContent = "";
+      $("sheet-note").hidden = true;
+    }
+
+    function replay(el, className) {
+      el.classList.remove(className);
+      void el.offsetWidth;
+      el.classList.add(className);
+    }
+
+    function mountScene() {
+      if (state.screen !== "work") return;
+      const source = document.querySelector("#act-" + state.action + " .scene");
+      const stage = $("scene-stage");
+      if (!source || !stage) return;
+      stage.replaceChildren(source.cloneNode(true));
+      stage.classList.remove("scene-once");
+      void stage.offsetWidth;
+      stage.classList.add("scene-once");
+    }
+
+    function show(kind) {
+      motionKind = kind || "";
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const landed = () => {
+        if (kind === "action") mountScene();
+        syncEditorialVideos();
+      };
+      if (kind === "action" && !reduce && document.startViewTransition) {
+        document.documentElement.classList.add("motion-action");
+        try {
+          const change = document.startViewTransition(() => render());
+          change.finished.finally(() => {
+            document.documentElement.classList.remove("motion-action");
+            landed();
+          });
+          return;
+        } catch (err) {
+          document.documentElement.classList.remove("motion-action");
+        }
+      }
+      render();
+      landed();
+    }
+
+    function render() {
+      const motion = motionKind;
+      motionKind = "";
+      const keepAnswers = state.running && !$("view-table").hidden && $("view-table").childElementCount > 0;
+      if (keepAnswers) {
+        $("start").textContent = "Processing…";
+        $("start").disabled = true;
+        $("processing").hidden = false;
+        $("sheet-head").hidden = false;
+        refreshCount();
+        return;
+      }
+      const home = state.screen === "home";
+      const enteredHome = home && shownScreen !== "home";
+      shownScreen = state.screen;
+      $("home").hidden = !home;
+      $("work").hidden = home;
+      if (enteredHome && !state.demoOpen) replay($("home"), "home-enter");
+      const translate = state.action === "translate";
+      const explore = state.action === "explore";
+      const situation = state.action === "situation";
+      $("direction-field").hidden = !translate;
+      $("subject-field").hidden = !explore;
+      $("explore-length-field").hidden = !explore;
+      $("keywords-field").hidden = !situation;
+      $("situation-extra-field").hidden = !(situation && state.ready);
+      $("text-field").hidden = !translate;
+      const actionName = translate ? "Translate" : explore ? "Explore" : "Talk";
+      $("work-title").textContent = actionName;
+      $("sheet-title").textContent = translate ? "Translation" : actionName;
+      $("sheet-body").className = "sheet-body" + (explore ? " for-explore" : situation ? " for-situation" : "");
+      $("start").textContent = state.running ? "Processing…" : "Start";
+      $("start").disabled = state.running;
+      $("processing").hidden = !state.running;
+      $("sheet-head").hidden = state.running;
+      $("view-table").hidden = true;
+      $("view-topics").hidden = true;
+      $("view-warning").hidden = true;
+      hideExploreExtras();
+
+      if (state.running) {
+        refreshCount();
+        return;
+      }
+      if (!state.ready) {
+        $("sheet-note").hidden = false;
+        $("sheet-note").textContent = "Press Start.";
+        refreshCount();
+        return;
+      }
+
+      const live = !state.demoOpen && liveResult;
+      if (live && liveResult.error && !liveResult.pairs.length) {
+        showWarning("Model request failed", liveResult.error);
+        refreshCount();
+        return;
+      }
+
+      if (explore && !$("subject").value.trim()) {
+        showWarning("Name a place to explore", "Name a place to explore.");
+      } else if (situation && !$("keywords").value.trim()) {
+        showWarning("No keywords added", "No keywords added. Add keywords to continue.");
+      } else if (situation) {
+        if (live && liveResult.options.length) {
+          showOptionButtons($("view-topics"), liveResult.options, state.topic, (id) => {
+            state.topic = id;
+            clearSituationQuestion();
+            refreshLive();
+          });
+        } else {
+          showTopics();
+        }
+        const pairs = live
+          ? ((state.topic || state.situationQuestion) && liveResult.followPairs ? liveResult.followPairs : liveResult.pairs)
+          : situationPairs();
+        if (pairs.length) {
+          $("view-table").hidden = false;
+          $("sheet-body").classList.add("with-answers");
+          fillPairs($("view-table"), pairs, "en", motion === "sheet" || motion === "answer");
+        }
+      } else if (explore) {
+        const guide = exploreModel($("subject").value);
+        const options = live && liveResult.options.length ? liveResult.options : guide.options;
+        $("view-table").hidden = false;
+        $("sheet-body").classList.add("with-answers");
+        $("explore-answers").hidden = false;
+        const brief = live && liveResult.pairs.length ? liveResult.pairs : mergePairsToSingleBlock(guide.brief);
+        fillPairs($("view-table"), brief, "en", motion === "sheet");
+        if (guide.query) {
+          $("maps-link").href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(guide.query);
+          $("view-maps").hidden = false;
+        }
+        $("explore-split").hidden = false;
+        $("explore-prompt").hidden = false;
+        $("view-ask").hidden = false;
+        showOptionButtons($("explore-topics"), options, state.more ? "" : state.pick, (id) => {
+          state.pick = id;
+          state.more = "";
+          clearTypedQuestion();
+          if (!state.demoOpen) refreshLive();
+          else show("answer");
+        });
+        const follow = exploreFollow(guide);
+        if (live && (state.pick || state.more || state.question)) {
+          $("follow-empty").hidden = true;
+          $("follow-title").hidden = false;
+          $("follow-title").textContent = liveResult.followTitle || focusLabel();
+          if (liveResult.followPairs && liveResult.followPairs.length) {
+            $("view-follow").hidden = false;
+            fillPairs($("view-follow"), liveResult.followPairs, "en", motion === "sheet" || motion === "answer");
+            if (motion === "answer" || motion === "sheet") replay(document.querySelector(".explore-answers"), "arrive-answer");
+          }
+        } else if (follow) {
+          $("follow-empty").hidden = true;
+          $("follow-title").hidden = false;
+          $("follow-title").textContent = follow.title;
+          $("view-follow").hidden = false;
+          fillPairs($("view-follow"), mergePairsToSingleBlock(follow.lines), "en", motion === "sheet" || motion === "answer");
+          if (motion === "answer" || motion === "sheet") replay(document.querySelector(".explore-answers"), "arrive-answer");
+        } else {
+          $("follow-empty").hidden = false;
+        }
+        const chosen = options.find((item) => item.id === state.pick);
+        if (chosen && chosen.more && chosen.more.length && !state.question) {
+          $("more-prompt").hidden = false;
+          showOptionButtons($("view-more"), chosen.more, state.more, (id) => {
+            state.more = id;
+            clearTypedQuestion();
+            if (!state.demoOpen) refreshLive();
+            else show("answer");
+          });
+          if (motion === "answer" && !state.more) {
+            replay($("more-prompt"), "arrive-more");
+            replay($("view-more"), "arrive-more");
+          }
+        }
+      } else {
+        $("view-table").hidden = false;
+        const pairs = live && liveResult.pairs.length ? liveResult.pairs : translatePairs;
+        fillPairs($("view-table"), pairs, state.direction === "en-pt" ? "en" : "pt", motion === "sheet");
+      }
+      if (explore) {
+        $("explore-model-note").textContent = state.exploreLength === "short"
+          ? "Short, under 500 characters." + (live && liveResult.model ? " " + liveResult.model : "")
+          : "Long, under 1000 characters." + (live && liveResult.model ? " " + liveResult.model : "");
+      }
+      refreshCount();
+      finishNote();
+      if (live && liveResult.error) {
+        $("sheet-note").hidden = false;
+        $("sheet-note").textContent = liveResult.error;
+      }
+    }
+
+    function openAction(action, fromDemo) {
+      state.screen = "work";
+      if (!fromDemo) closeDemo();
+      if (action === state.action) {
+        show("action");
+        return;
+      }
+      applyAction(action);
+    }
+
+    function goHomeFromWork() {
+      state.screen = "home";
+      state.ready = false;
+      state.running = false;
+      state.topic = "";
+      state.pick = "";
+      state.more = "";
+      liveToken += 1;
+      liveResult = null;
+      liveCache = {};
+      window.clearTimeout(runTimer);
+      stopAudio();
+      $("source").value = "";
+      $("subject").value = "";
+      $("keywords").value = "";
+      clearTypedQuestion();
+      clearSituationQuestion();
+      clearSituationEntry();
+      $("status").textContent = "";
+      refreshCount();
+      show("action");
+    }
+
+    function applyAction(action) {
+      state.action = action;
+      state.ready = false;
+      state.running = false;
+      liveToken += 1;
+      liveResult = null;
+      liveCache = {};
+      state.topic = "";
+      state.pick = "";
+      state.more = "";
+      setExploreLength("short");
+      clearTypedQuestion();
+      clearSituationQuestion();
+      window.clearTimeout(runTimer);
+      $("status").textContent = "";
+      show("action");
+    }
+
+    function setRate(rate) {
+      state.rate = rate;
+      press("speed-1", rate === 1);
+      press("speed-half", rate === 0.5);
+    }
+    $("speed-1").addEventListener("click", () => setRate(1));
+    $("speed-half").addEventListener("click", () => setRate(0.5));
+
+    $("start").addEventListener("click", () => {
+      if (state.running) return;
+      state.running = true;
+      state.ready = false;
+      state.topic = "";
+      state.pick = "";
+      state.more = "";
+      clearTypedQuestion();
+      clearSituationQuestion();
+      render();
+      window.clearTimeout(runTimer);
+      if (state.demoOpen) {
+        runTimer = window.setTimeout(() => {
+          state.running = false;
+          state.ready = true;
+          show("sheet");
+          revealResults();
+        }, 900);
+        return;
+      }
+      if (!activeText().trim()) {
+        state.running = false;
+        state.ready = true;
+        show("sheet");
+        return;
+      }
+      finishWithLiveModel();
+    });
+
+    async function loadEditorialVideos() {
+      let videos = [];
+      try {
+        const response = await fetch("/api/editorial-videos", { cache: "no-store" });
+        if (response.ok) {
+          const payload = await response.json();
+          if (payload && Array.isArray(payload.videos)) videos = payload.videos;
+        }
+      } catch (err) {}
+      if (!videos.length) return;
+      document.querySelectorAll(".editorial-video").forEach((video) => {
+        const slot = Number.parseInt(video.dataset.editorialSlot || "0", 10);
+        const picked = videos[slot] || videos[slot % videos.length];
+        if (!picked || !picked.url) return;
+        video.src = picked.url;
+      });
+      syncEditorialVideos();
+    }
+
+    function syncEditorialVideos() {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const canPlay = !reduce && (state.screen === "home" || state.screen === "work");
+      document.querySelectorAll(".editorial-video").forEach((video) => {
+        if (canPlay) {
+          const play = video.play();
+          if (play && typeof play.catch === "function") play.catch(() => {});
+        } else {
+          video.pause();
+          if (reduce) video.currentTime = 0;
+        }
+      });
+    }
+
+    loadEditorialVideos();
+    $("watch-demo").addEventListener("click", () => {
+      if (state.demoOpen) closeDemo();
+      else openDemo();
+    });
+    $("stop-demo").addEventListener("click", closeDemo);
+    if (new URLSearchParams(location.search).get("autodemo") === "1") openDemo();
+    else runAppIntro();
+
+    $("act-translate").addEventListener("click", () => openAction("translate"));
+    $("act-explore").addEventListener("click", () => openAction("explore"));
+    $("act-situation").addEventListener("click", () => openAction("situation"));
+    $("back-home").addEventListener("click", goHomeFromWork);
+    function applyDirection(direction) {
+      if (state.direction === direction) return;
+      state.direction = direction;
+      press("dir-en-pt", direction === "en-pt");
+      press("dir-pt-en", direction === "pt-en");
+      stopAudio();
+      $("source").value = "";
+      $("status").textContent = "";
+      liveToken += 1;
+      liveResult = null;
+      state.ready = false;
+      state.running = false;
+      refreshCount();
+      show("sheet");
+    }
+    $("dir-en-pt").addEventListener("click", () => applyDirection("en-pt"));
+    $("dir-pt-en").addEventListener("click", () => applyDirection("pt-en"));
+    $("explore-short").addEventListener("click", () => {
+      if (state.exploreLength === "short") return;
+      setExploreLength("short");
+      if (state.action === "explore" && state.ready && !state.demoOpen && liveResult) {
+        state.pick = "";
+        state.more = "";
+        clearTypedQuestion();
+        refreshLive();
+      } else if (state.action === "explore" && state.ready) show("answer");
+    });
+    $("explore-long").addEventListener("click", () => {
+      if (state.exploreLength === "long") return;
+      setExploreLength("long");
+      if (state.action === "explore" && state.ready && !state.demoOpen && liveResult) {
+        state.pick = "";
+        state.more = "";
+        clearTypedQuestion();
+        refreshLive();
+      } else if (state.action === "explore" && state.ready) show("answer");
+    });
+    $("situation-entry-send").addEventListener("click", submitSituationEntry);
+    $("situation-entry").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        submitSituationEntry();
+      }
+    });
+
+    function askExplore() {
+      const question = $("explore-question").value.trim();
+      if (!question || !state.ready || state.action !== "explore") return;
+      state.question = question;
+      state.pick = "";
+      state.more = "";
+      if (!state.demoOpen) refreshLive();
+      else show("answer");
+    }
+    $("explore-ask").addEventListener("click", askExplore);
+    $("explore-question").addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        askExplore();
+      }
+    });
+    function markDraft() {
+      state.ready = false;
+      state.topic = "";
+      state.pick = "";
+      state.more = "";
+      clearTypedQuestion();
+      clearSituationQuestion();
+      clearSituationEntry();
+      $("status").textContent = "";
+      refreshCount();
+      render();
+    }
+    $("source").addEventListener("input", () => { $("status").textContent = ""; refreshCount(); });
+    $("subject").addEventListener("input", markDraft);
+    $("keywords").addEventListener("input", () => {
+      if (state.action === "situation" && state.ready) {
+        $("status").textContent = "";
+        refreshCount();
+        return;
+      }
+      situationExtraTopics = [];
+      situationTopicsOverride = null;
+      markDraft();
+    });
+    $("dictate-source").addEventListener("click", () => {
+      $("source").value = "";
+      $("status").textContent = "Listening…";
+      refreshCount();
+      listen(state.direction === "pt-en" ? "pt-PT" : "en-US", (phrase) => {
+        $("source").value = phrase;
+        $("status").textContent = "";
+        refreshCount();
+      }, true);
+    });
+    $("dictate-subject").addEventListener("click", () => {
+      $("subject").value = "";
+      $("status").textContent = "Listening…";
+      markDraft();
+      listen("en-US", (phrase) => {
+        $("subject").value = phrase;
+        $("status").textContent = "";
+        markDraft();
+      }, true);
+    });
+    $("dictate-keywords").addEventListener("click", () => {
+      $("keywords").value = "";
+      $("status").textContent = "Listening…";
+      listen("en-US", (phrase) => {
+        $("keywords").value = phrase;
+        $("status").textContent = "";
+        if (state.action === "situation" && state.ready) {
+          refreshCount();
+          return;
+        }
+        markDraft();
+      }, true);
+    });
+
+    $("copy").addEventListener("click", async () => {
+      const text = plainExport();
+      try {
+        await navigator.clipboard.writeText(text);
+        $("status").textContent = "Copied.";
+      } catch (err) {
+        $("status").textContent = "Copy the sheet from the page. The browser blocked the clipboard.";
+      }
+    });
+
+    const docxInk = { en: "0C3D32", pt: "14365F", note: "6B4E16", warn: "8D2F2F", text: "1C1915", muted: "5C564C" };
+    const docxFill = { en: "E5F6EF", pt: "E8F1FB", note: "F8F1DC", warn: "FDECEC", paper: "FFFDF8" };
+    const crcTable = new Uint32Array(256);
+    for (let n = 0; n < 256; n += 1) {
+      let crc = n;
+      for (let k = 0; k < 8; k += 1) crc = (crc & 1) ? (0xedb88320 ^ (crc >>> 1)) : (crc >>> 1);
+      crcTable[n] = crc >>> 0;
+    }
+
+    function crc32(bytes) {
+      let crc = 0xffffffff;
+      for (let i = 0; i < bytes.length; i += 1) crc = crcTable[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8);
+      return (crc ^ 0xffffffff) >>> 0;
+    }
+
+    function zipStore(files) {
+      const encoder = new TextEncoder();
+      const locals = [];
+      const centrals = [];
+      let offset = 0;
+      files.forEach((file) => {
+        const name = encoder.encode(file.name);
+        const data = file.data;
+        const crc = crc32(data);
+        const local = new Uint8Array(30 + name.length);
+        const view = new DataView(local.buffer);
+        view.setUint32(0, 0x04034b50, true);
+        view.setUint16(4, 20, true);
+        view.setUint16(8, 0, true);
+        view.setUint32(14, crc, true);
+        view.setUint32(18, data.length, true);
+        view.setUint32(22, data.length, true);
+        view.setUint16(26, name.length, true);
+        local.set(name, 30);
+        locals.push(local, data);
+        const central = new Uint8Array(46 + name.length);
+        const centralView = new DataView(central.buffer);
+        centralView.setUint32(0, 0x02014b50, true);
+        centralView.setUint16(4, 20, true);
+        centralView.setUint16(6, 20, true);
+        centralView.setUint32(16, crc, true);
+        centralView.setUint32(20, data.length, true);
+        centralView.setUint32(24, data.length, true);
+        centralView.setUint16(28, name.length, true);
+        centralView.setUint32(42, offset, true);
+        central.set(name, 46);
+        centrals.push(central);
+        offset += local.length + data.length;
+      });
+      const centralSize = centrals.reduce((sum, part) => sum + part.length, 0);
+      const end = new Uint8Array(22);
+      const endView = new DataView(end.buffer);
+      endView.setUint32(0, 0x06054b50, true);
+      endView.setUint16(8, files.length, true);
+      endView.setUint16(10, files.length, true);
+      endView.setUint32(12, centralSize, true);
+      endView.setUint32(16, offset, true);
+      const out = new Uint8Array(offset + centralSize + end.length);
+      let cursor = 0;
+      locals.forEach((part) => { out.set(part, cursor); cursor += part.length; });
+      centrals.forEach((part) => { out.set(part, cursor); cursor += part.length; });
+      out.set(end, cursor);
+      return out;
+    }
+
+    function xmlEscape(text) {
+      return String(text)
+        .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function runXml(run, lang, forceBold) {
+      if (!run || run.break) return "<w:r><w:br/></w:r>";
+      if (!run.text) return "";
+      const color = docxInk[lang] || docxInk.text;
+      const bold = forceBold || run.bold ? "<w:b/>" : "";
+      const size = run.size || "22";
+      const space = /^\s|\s$/.test(run.text) ? " xml:space=\"preserve\"" : "";
+      return `<w:r><w:rPr>${bold}<w:color w:val="${color}"/><w:sz w:val="${size}"/><w:szCs w:val="${size}"/></w:rPr><w:t${space}>${xmlEscape(run.text)}</w:t></w:r>`;
+    }
+
+    function cellXml(cell, width) {
+      const lang = cell.lang || "";
+      const fill = docxFill[lang] || docxFill.paper;
+      const runs = (cell.runs && cell.runs.length ? cell.runs : [{ text: "" }]).map((run) => (
+        runXml({ ...run, size: run.size || (cell.header ? "20" : "24") }, lang, cell.header)
+      )).join("");
+      const borders = ["top", "left", "bottom", "right"].map((side) => (
+        `<w:${side} w:val="single" w:sz="4" w:space="0" w:color="E3D9CC"/>`
+      )).join("");
+      return `<w:tc><w:tcPr><w:tcW w:w="${width}" w:type="dxa"/><w:shd w:val="clear" w:color="auto" w:fill="${fill}"/><w:tcBorders>${borders}</w:tcBorders><w:tcMar><w:top w:w="80" w:type="dxa"/><w:left w:w="120" w:type="dxa"/><w:bottom w:w="80" w:type="dxa"/><w:right w:w="120" w:type="dxa"/></w:tcMar></w:tcPr><w:p><w:pPr><w:spacing w:before="0" w:after="0"/></w:pPr>${runs}</w:p></w:tc>`;
+    }
+
+    function tableXml(block) {
+      if (!block.rows.length) return "";
+      const cols = Math.max(1, ...block.rows.map((row) => row.length));
+      const width = Math.floor(9360 / cols);
+      const grid = Array.from({ length: cols }, () => `<w:gridCol w:w="${width}"/>`).join("");
+      const rows = block.rows.map((row) => `<w:tr>${row.map((cell) => cellXml(cell, width)).join("")}</w:tr>`).join("");
+      const caption = block.caption
+        ? `<w:p><w:pPr><w:spacing w:before="60" w:after="160"/></w:pPr>${runXml({ text: block.caption, size: "18" }, "muted", false)}</w:p>`
+        : `<w:p><w:pPr><w:spacing w:before="40" w:after="80"/></w:pPr></w:p>`;
+      return `<w:tbl><w:tblPr><w:tblW w:w="${width * cols}" w:type="dxa"/><w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid>${grid}</w:tblGrid>${rows}</w:tbl>${caption}`;
+    }
+
+    function calloutXml(block) {
+      const kind = block.kind === "warn" ? "warn" : "note";
+      return tableXml({
+        rows: [[{
+          lang: kind,
+          runs: [
+            { text: block.title, bold: true, size: "21" },
+            { break: true },
+            { text: block.body, size: "22" }
+          ]
+        }]]
+      });
+    }
+
+    function documentXml(blocks) {
+      const body = blocks.map((block) => {
+        if (block.type === "heading") {
+          return `<w:p><w:pPr><w:spacing w:after="60"/></w:pPr>${runXml({ text: block.text, size: "32" }, "pt", true)}</w:p>`;
+        }
+        if (block.type === "caption") {
+          return `<w:p><w:pPr><w:spacing w:after="140"/></w:pPr>${runXml({ text: block.text, size: "18" }, "muted", false)}</w:p>`;
+        }
+        if (block.type === "tense") {
+          const runs = [];
+          block.parts.forEach((part, index) => {
+            if (index) runs.push(runXml({ text: "  ·  ", size: "22" }, "muted", false));
+            runs.push(runXml({ text: part.text, size: "24" }, part.lang, true));
+          });
+          return `<w:p><w:pPr><w:spacing w:before="180" w:after="40"/></w:pPr>${runs.join("")}</w:p>`;
+        }
+        if (block.type === "callout") return calloutXml(block);
+        if (block.type === "table") return tableXml(block);
+        return "";
+      }).join("");
+      return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:body>${body}<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:body>
+</w:document>`;
+    }
+
+    function buildDocx(blocks) {
+      const encoder = new TextEncoder();
+      const contentTypes = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+<Default Extension="xml" ContentType="application/xml"/>
+<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>
+<Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/>
+</Types>`;
+      const rels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+</Relationships>`;
+      const styles = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+<w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Palatino" w:hAnsi="Palatino" w:cs="Palatino"/><w:sz w:val="22"/><w:szCs w:val="22"/></w:rPr></w:rPrDefault></w:docDefaults>
+<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>
+</w:styles>`;
+      const settings = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>`;
+      const docRels = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>
+</Relationships>`;
+      return zipStore([
+        { name: "[Content_Types].xml", data: encoder.encode(contentTypes) },
+        { name: "_rels/.rels", data: encoder.encode(rels) },
+        { name: "word/document.xml", data: encoder.encode(documentXml(blocks)) },
+        { name: "word/styles.xml", data: encoder.encode(styles) },
+        { name: "word/settings.xml", data: encoder.encode(settings) },
+        { name: "word/_rels/document.xml.rels", data: encoder.encode(docRels) }
+      ]);
+    }
+
+    function cellLang(el) {
+      if (!el || !el.classList) return "";
+      if (el.classList.contains("en")) return "en";
+      if (el.classList.contains("pt")) return "pt";
+      return "";
+    }
+
+    function runsFrom(node) {
+      const runs = [];
+      node.childNodes.forEach((child) => {
+        if (child.nodeType === 3) {
+          if (child.textContent) runs.push({ text: child.textContent, bold: false });
+        } else if (child.nodeType === 1) {
+          if (child.classList && ["sound", "mic", "heard"].some((name) => child.classList.contains(name))) return;
+          if (child.tagName === "BR") runs.push({ break: true });
+          else if (child.tagName === "STRONG" || child.tagName === "B") {
+            if (child.textContent) runs.push({ text: child.textContent, bold: true });
+          } else {
+            runsFrom(child).forEach((run) => runs.push(run));
+          }
+        }
+      });
+      return runs;
+    }
+
+    function tablesFrom(root) {
+      return Array.from(root.querySelectorAll("table")).map((table) => {
+        const rows = Array.from(table.querySelectorAll("tr")).map((tr) => (
+          Array.from(tr.children).filter((cell) => cell.tagName === "TH" || cell.tagName === "TD").map((cell) => ({
+            lang: cellLang(cell),
+            header: cell.tagName === "TH",
+            runs: runsFrom(cell)
+          }))
+        )).filter((row) => row.length);
+        const caption = table.querySelector("caption");
+        return { type: "table", rows, caption: caption ? caption.textContent.trim() : "" };
+      });
+    }
+
+    function readingBlock(root) {
+      const lang = cellLang(root) || "pt";
+      const rows = [];
+      const chip = root.querySelector(".chip");
+      if (chip) rows.push([{ lang: cellLang(chip) || lang, header: true, runs: [{ text: chip.textContent, bold: true }] }]);
+      root.querySelectorAll("p").forEach((line) => {
+        const lineLang = cellLang(line) || lang;
+        rows.push([{ lang: lineLang, header: false, runs: runsFrom(line) }]);
+      });
+      return { type: "table", rows };
+    }
+
+    function sheetBlocks() {
+      const blocks = [];
+      if (!$("sheet-head").hidden) {
+        blocks.push({ type: "heading", text: $("sheet-title").textContent });
+        const note = $("sheet-note").textContent.trim();
+        if (note) blocks.push({ type: "caption", text: note });
+      }
+      if (!$("processing").hidden) {
+        blocks.push({ type: "caption", text: "Processing…" });
+        return blocks;
+      }
+      if (!$("view-warning").hidden) {
+        blocks.push({
+          type: "callout",
+          kind: "warn",
+          title: $("warning-title").textContent,
+          body: $("warning-body").textContent
+        });
+        return blocks;
+      }
+      if (!$("view-table").hidden) blocks.push(...tablesFrom($("view-table")));
+      if (!$("view-maps").hidden) blocks.push({ type: "caption", text: $("maps-link").href });
+      if (!$("view-topics").hidden) {
+        const chosen = situationTopics.find((topic) => topic.id === state.topic);
+        const labels = Array.from($("view-topics").querySelectorAll("button")).map((button) => button.textContent);
+        if (labels.length) blocks.push({ type: "caption", text: labels.join(" · ") });
+        if (chosen) blocks.push({ type: "heading", text: chosen.label });
+      }
+      if (!$("explore-topics").hidden) {
+        const labels = Array.from($("explore-topics").querySelectorAll("button")).map((button) => button.textContent);
+        if (labels.length) blocks.push({ type: "caption", text: labels.join(" · ") });
+      }
+      if (!$("view-more").hidden) {
+        const labels = Array.from($("view-more").querySelectorAll("button")).map((button) => button.textContent);
+        if (labels.length) blocks.push({ type: "caption", text: labels.join(" · ") });
+      }
+      if (!$("follow-title").hidden) blocks.push({ type: "heading", text: $("follow-title").textContent });
+      if (!$("view-follow").hidden) blocks.push(...tablesFrom($("view-follow")));
+      return blocks.length ? blocks : [{ type: "caption", text: "Press Start." }];
+    }
+
+    let saveHandle = null;
+
+    function suggestedPath() {
+      const ext = $("format").value === "docx" ? "docx" : "txt";
+      return "~/Downloads/pt-pt-" + state.action + "." + ext;
+    }
+
+    function fileNameFromPath(path) {
+      const slash = Math.max(path.lastIndexOf("/"), path.lastIndexOf("\\"));
+      return slash >= 0 ? path.slice(slash + 1) : path;
+    }
+
+    $("save").addEventListener("click", () => {
+      saveHandle = null;
+      $("save-chosen").value = suggestedPath();
+      $("save-dialog").showModal();
+    });
+
+    $("save-cancel").addEventListener("click", () => {
+      saveHandle = null;
+      $("save-dialog").close();
+    });
+
+    $("save-choose").addEventListener("click", async () => {
+      if (!window.showSaveFilePicker) {
+        $("save-chosen").focus();
+        return;
+      }
+      const docx = $("format").value === "docx";
+      const ext = docx ? "docx" : "txt";
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: fileNameFromPath($("save-chosen").value) || ("pt-pt-" + state.action + "." + ext),
+          startIn: "downloads",
+          types: docx ? [{
+            description: "Word document",
+            accept: { "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"] }
+          }] : [{
+            description: "Plain text",
+            accept: { "text/plain": [".txt"] }
+          }]
+        });
+        saveHandle = handle;
+        const current = $("save-chosen").value;
+        const slash = Math.max(current.lastIndexOf("/"), current.lastIndexOf("\\"));
+        $("save-chosen").value = (slash >= 0 ? current.slice(0, slash + 1) : "") + handle.name;
+      } catch (err) {
+        if (err && err.name === "AbortError") return;
+      }
+    });
+
+    $("save-confirm").addEventListener("click", async () => {
+      const path = $("save-chosen").value.trim();
+      if (!path) return;
+      const docx = $("format").value === "docx";
+      const blob = docx
+        ? new Blob([buildDocx(sheetBlocks())], { type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" })
+        : new Blob([plainExport()], { type: "text/plain;charset=utf-8" });
+      try {
+        if (saveHandle) {
+          const writable = await saveHandle.createWritable();
+          await writable.write(blob);
+          await writable.close();
+        } else {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = fileNameFromPath(path);
+          link.click();
+          URL.revokeObjectURL(url);
+        }
+      } catch (err) {
+        $("status").textContent = "The file was not saved. Choose the path again.";
+        return;
+      }
+      saveHandle = null;
+      $("save-dialog").close();
+      $("status").textContent = "Saved.";
+    });
+
+    $("send").addEventListener("click", async () => {
+      const text = plainExport();
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: "PT-PT study sheet", text });
+          $("status").textContent = "Sent.";
+          return;
+        } catch (err) {
+          if (err && err.name === "AbortError") return;
+        }
+      }
+      $("status").textContent = "Send uses the share sheet when this browser has one. WhatsApp is the button beside Send.";
+    });
+
+    $("whatsapp").addEventListener("click", () => {
+      const url = "https://wa.me/?text=" + encodeURIComponent(plainExport());
+      window.open(url, "_blank", "noopener,noreferrer");
+      $("status").textContent = "Opened WhatsApp.";
+    });
+
+    $("theme-toggle").addEventListener("click", () => {
+      const dark = document.body.classList.contains("theme-dark");
+      applyTheme(dark ? "light" : "dark");
+    });
+    try {
+      applyTheme(localStorage.getItem(THEME_KEY) || "dark");
+    } catch (err) {
+      applyTheme("dark");
+    }
+
+    setExploreLength("short");
+    render();
+    syncEditorialVideos();
+  </script>
+</body>
+</html>

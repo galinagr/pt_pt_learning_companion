@@ -1,0 +1,43 @@
+- name: bug
+  color: "d73a4a"
+  description: Something is not working
+
+- name: enhancement
+  color: "a2eeef"
+  description: New feature or request
+
+- name: documentation
+  color: "0075ca"
+  description: Documentation improvements
+
+- name: design
+  color: "c2e0c6"
+  description: UI, UX, or visual polish
+
+- name: demo-flow
+  color: "fbca04"
+  description: Demo script or guided tour behavior
+
+- name: translation
+  color: "bfd4f2"
+  description: Translation direction, phrasing, and bilingual output
+
+- name: explore
+  color: "5319e7"
+  description: Explore mode content and interactions
+
+- name: situation
+  color: "f9d0c4"
+  description: A situation mode content and interactions
+
+- name: good first issue
+  color: "7057ff"
+  description: Good for first-time contributors
+
+- name: help wanted
+  color: "008672"
+  description: Extra attention is needed
+
+- name: needs-triage
+  color: "ededed"
+  description: Needs initial maintainer review

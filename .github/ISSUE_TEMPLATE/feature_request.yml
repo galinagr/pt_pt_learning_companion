@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest an idea to improve the product
+title: "[Feature]: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What user need or pain are you solving?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should we build?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any other approaches you evaluated
+  - type: textarea
+    id: impact
+    attributes:
+      label: UX impact
+      description: How this affects Translate, Explore, A situation, or Demo

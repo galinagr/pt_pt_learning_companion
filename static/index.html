@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PT-PT Learning Companion</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
+</head>
+<body>
+  <main class="page" x-data="companion()" x-cloak>
+    <header class="mast">
+      <p class="eyebrow">European Portuguese</p>
+      <h1>Learning companion</h1>
+      <p class="lede">Paste or upload a study text, select a passage, and get an English translation, vocabulary, and three practice exercises.</p>
+    </header>
+
+    <section class="panel">
+      <div class="toolbar">
+        <label class="file">
+          Upload .txt
+          <input type="file" accept=".txt,text/plain" @change="loadFile($event)">
+        </label>
+        <button type="button" @click="study()" :disabled="!passage || busy">
+          <span x-text="busy ? 'Studying…' : 'Study selection'"></span>
+        </button>
+      </div>
+      <label class="field-label" for="document">Study text</label>
+      <textarea id="document" x-model="document" @mouseup="captureSelection($event)" @keyup="captureSelection($event)" placeholder="Cole aqui um texto em português europeu."></textarea>
+      <p class="hint" x-show="passage">Selected: <span x-text="passage"></span></p>
+      <p class="error" x-show="error" x-text="error"></p>
+    </section>
+
+    <section class="results" x-show="material">
+      <article>
+        <h2>Translation</h2>
+        <p x-text="material.translation"></p>
+      </article>
+      <article>
+        <h2>Vocabulary</h2>
+        <ul class="vocab">
+          <template x-for="item in material.vocabulary" :key="item.term + item.example">
+            <li>
+              <strong x-text="item.term"></strong>
+              <span x-text="item.explanation"></span>
+              <em x-text="item.example"></em>
+            </li>
+          </template>
+        </ul>
+      </article>
+      <article>
+        <h2>Practice</h2>
+        <ol class="exercises">
+          <template x-for="(item, index) in material.exercises" :key="index">
+            <li>
+              <p x-text="item.prompt"></p>
+              <button type="button" @click="item.open = !item.open" x-text="item.open ? 'Hide answer' : 'Show answer'"></button>
+              <p class="answer" x-show="item.open" x-text="item.answer"></p>
+            </li>
+          </template>
+        </ol>
+      </article>
+    </section>
+  </main>
+  <script>
+    function companion() {
+      return {
+        document: "O comboio para o Porto parte da plataforma nove. Não te esqueças do bilhete.",
+        passage: "",
+        material: null,
+        error: "",
+        busy: false,
+        captureSelection(event) {
+          const selected = window.getSelection().toString().trim();
+          if (!selected) return;
+          if (document.activeElement !== event.currentTarget) return;
+          this.passage = selected;
+          this.error = "";
+        },
+        async loadFile(event) {
+          const file = event.target.files[0];
+          if (!file) return;
+          this.document = await file.text();
+          this.passage = "";
+          this.material = null;
+          this.error = "";
+        },
+        async study() {
+          this.busy = true;
+          this.error = "";
+          try {
+            const response = await fetch("/api/study", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ document: this.document, passage: this.passage }),
+            });
+            const body = await response.json();
+            if (!response.ok) {
+              this.error = body.detail || "Could not study that passage.";
+              return;
+            }
+            body.exercises = body.exercises.map((item) => ({ ...item, open: false }));
+            this.material = body;
+          } catch (err) {
+            this.error = "The study request did not complete.";
+          } finally {
+            this.busy = false;
+          }
+        },
+      };
+    }
+  </script>
+</body>
+</html>
