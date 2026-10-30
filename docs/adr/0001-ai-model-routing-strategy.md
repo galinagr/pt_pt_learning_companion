@@ -2,7 +2,7 @@
 
 - **Status:** Accepted (initial rollout)
 - **Owners:** Halyna Hriaznova
-- **Related docs:** `docs/ai-design.md`, `docs/meta-model-architecture.md`, `docs/meta-model-overview.md`
+- **Related docs:** [README architecture](../../README.md#architecture), `docs/ai-design.md`, `docs/meta-model-architecture.md`, `docs/meta-model-overview.md`
 
 ## Context
 
@@ -86,6 +86,8 @@ Use Glimmer for routing/classification, Spark as default, Wonder for selective e
 - Additional testing needed for routing correctness
 
 ### System design (Option B — chosen)
+
+The same diagram is on the [README architecture](../../README.md#text-routing-option-b) page.
 
 ```mermaid
 flowchart TD

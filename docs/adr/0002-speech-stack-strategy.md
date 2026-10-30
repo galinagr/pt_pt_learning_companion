@@ -2,7 +2,7 @@
 
 - **Status:** Accepted (initial rollout)
 - **Owners:** Halyna Hriaznova
-- **Related docs:** `docs/ai-design.md`, `docs/meta-model-overview.md`
+- **Related docs:** [README architecture](../../README.md#architecture), `docs/ai-design.md`, `docs/meta-model-overview.md`
 
 ## Implementation status
 
@@ -78,6 +78,8 @@ Use Muse Voice Transcribe as primary transcription service and browser-native re
 - Requires backend pipeline and monitoring
 
 ### System design (Option B — chosen)
+
+The same diagram is on the [README architecture](../../README.md#speech-option-b) page.
 
 ```mermaid
 flowchart TD
